@@ -12,6 +12,9 @@ A prototype like Scratch3, godot sprite2D extension
 Sprite2DExtである「カニ」「ニワトリ」を使用しています。
 それぞれ、マウスドラッグで位置を変えることができます。
 
+![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/img_3017.gif)
+
+
 # 注入したScratch3愛
 
 ## SVG画像をくっきりと表示
