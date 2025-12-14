@@ -9,6 +9,7 @@ signal signal_just_pressed_mouse_left()
 signal signal_just_release_mouse_left()
 # SVGをレンダリングする拡大率
 @export var svg_scale: float = 1.0
+
 # drag可否
 @export var draggable:bool = false
 
@@ -38,8 +39,8 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 			var file = FileAccess.open(path, FileAccess.READ)
 			if file != null:
 				# get svg text
-				var _img = file.get_as_text(true)
-				_svg_tex_arr.append(_img)
+				var _txt = file.get_as_text(true)
+				_svg_tex_arr.append(_txt)
 		else:
 				print("ivalid path = ", path)
 	
@@ -62,6 +63,7 @@ func _draw_svg() -> void:
 		_texture_idx = _texture_idx % tex_size
 		_img.load_svg_from_string(_svg_tex_arr[_texture_idx], svg_scale)
 		self.texture.set_image(_img)
+			
 
 # PROCESS_ALWAYS( Engine停止時に、停止する )
 # when false, the timer will be paused when setting paused to true
@@ -126,20 +128,20 @@ func _is_pixel_touched(target:Sprite2DExt) -> bool :
 			if self.is_pixel_opaque(pos):
 				# 自身のピクセルの座標を 相手のローカル座標基準へ変える
 				var _pos00:Vector2 = target.to_local(self.to_global(pos))
-				var _pos01:Vector2 = Vector2(_pos00.x+1, _pos00.y)
-				var _pos02:Vector2 = Vector2(_pos00.x-1, _pos00.y)
-				var _pos03:Vector2 = Vector2(_pos00.x, _pos00.y+1)
-				var _pos04:Vector2 = Vector2(_pos00.x, _pos00.y-1)
+#				var _pos01:Vector2 = Vector2(_pos00.x+1, _pos00.y)
+#				var _pos02:Vector2 = Vector2(_pos00.x-1, _pos00.y)
+#				var _pos03:Vector2 = Vector2(_pos00.x, _pos00.y+1)
+#				var _pos04:Vector2 = Vector2(_pos00.x, _pos00.y-1)
 				if target.is_pixel_opaque(_pos00):
 					return true
-				elif target.is_pixel_opaque(_pos01):
-					return true
-				elif target.is_pixel_opaque(_pos02):
-					return true
-				elif target.is_pixel_opaque(_pos03):
-					return true
-				elif target.is_pixel_opaque(_pos04):
-					return true
+#				elif target.is_pixel_opaque(_pos01):
+#					return true
+#				elif target.is_pixel_opaque(_pos02):
+#					return true
+#				elif target.is_pixel_opaque(_pos03):
+#					return true
+#				elif target.is_pixel_opaque(_pos04):
+#					return true
 	
 	return false
 

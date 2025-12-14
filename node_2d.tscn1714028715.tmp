@@ -8,10 +8,13 @@
 [node name="Grab" type="Sprite2D" parent="."]
 rotation = 2.195624
 script = ExtResource("1_wtcfe")
+svg_scale = null
 draggable = true
 
 [node name="Niwatori" type="Sprite2D" parent="."]
 script = ExtResource("2_0e48y")
+svg_scale = null
+draggable = null
 
 [node name="Label" type="Label" parent="."]
 offset_right = 1066.0
