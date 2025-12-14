@@ -1,3 +1,54 @@
 # godot_sprite2d_ext
 A prototype like Scratch3, godot sprite2D extension
 
+Scratch3愛をGodotに注入するために作りました。
+これはまだ試作段階のものです。多くを期待しないでください。
+
+## Godot version
+- Godot 4.5
+
+# sample
+
+Sprite2DExtである「カニ」「ニワトリ」を使用しています。
+それぞれ、マウスドラッグで位置を変えることができます。
+
+# 注入したScratch3愛
+
+## コスチューム切り替え
+Scratch3風に 「次のコスチューム」みたいなメソッドを用意しました
+
+## 「〇秒待つ」を用意
+
+指定した秒数分、処理を止めるメソッドを用意しました。
+
+```:gdscript
+    await self.sleep(1)       # 1秒待つ
+```
+
+
+## ずっとブロック風の表現に挑戦
+「ずっと繰り返す」を while を使って書いてみました。
+
+```:gdscript
+func _loop() -> void:
+    while true:
+        await self.sleep(0.5)       # 0.5秒待つ
+        self.next_svg_tex()         # 次のコスチュームにする
+        await signal_process_loop   # Processループタイミングに合わせる
+```
+
+## bitmap collision
+画素がある部分が当たることで衝突判定を行う仕組みを用意しました。
+
+```:gdscript
+func _loop() -> void:
+	var target:Sprite2DExt = $"/root/Node2D/Niwatori" # ニワトリのノード
+	while true:
+		if self._is_pixel_touched(target) :         # 相手に触ったかの判定
+			self.modulate = Color(0.5, 0.5, 0.5)    # やや暗くする
+		else:
+			self.modulate = Color(1, 1, 1)          # 元の色に変える
+		await signal_process_loop                   # Processループタイミングに合わせる
+```
+
+# 
