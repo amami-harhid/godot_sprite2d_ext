@@ -22,30 +22,48 @@ func _ready() -> void:
 
 func _loop01() -> void :
 	while true:
-		await sleep(0.5)
-		next_svg_tex()
+		#next_svg_tex()
 		if Input.is_action_just_pressed("key_escape"):
 			break
-		await signal_process_loop
+		if Input.is_action_just_pressed("key_left"):
+			self.position.x -= 0.3
+		if Input.is_action_just_pressed("key_right"):
+			self.position.x += 0.3
+		#await sleep(0.5)
+		await _top.signal_process_loop
 		
 func _loop02() -> void:
+	var counter = 0
+	var label:Label = $"/root/Node2D/Label"
+	var circle :Sprite2D = $"/root/Node2D/Circle"
+	circle.visible = false # 隠す
+	#circle.modulate = Color(0, 0, 1) # 青くする
+	#circle.position = Vector2(0,0)
 	var target:Sprite2DExt = $"/root/Node2D/Niwatori"
 	while true:
-		if self._is_pixel_touched(target) :
-			self.modulate = Color(0.5, 0.5, 0.5) # やや暗くする
+		counter+=1
+		# 1秒ごと（Niwatoriのコスチューム切り替えのタイミングで、falseになる. なぜかな？
+		var hitter:Hit = self._is_pixel_touched(target, counter)
+		if hitter.hit == true:
+			#circle.position = hitter.position 
+			circle.position = hitter.position
+			circle.visible = true
+			label.text = "Hit!"
+		elif hitter.position.x == INF:
+			label.text = ""
+			circle.visible = false
 		else:
-			self.modulate = Color(1, 1, 1) # 元の色に変える
+			label.text = "Neighborhood!"
+			circle.visible = false
 			
-		if Input.is_action_just_pressed("key_escape"):
-			break
-		await signal_process_loop
+		
+		await _top.signal_process_loop
 	
-	self.modulate = Color(1, 1, 1) # 元の色に変える
 
 func _loop03() -> void:
 	while draggable:
 		self._drag_process()
 		
-		if Input.is_action_just_pressed("key_escape"):
-			break
-		await signal_process_loop
+		#if Input.is_action_just_pressed("key_escape"):
+		#	break
+		await _top.signal_process_loop

@@ -9,14 +9,22 @@ func _ready() -> void:
 	self.svg_file_path_setting([
 		"res://assets/hen-a.svg",
 		"res://assets/hen-b.svg",
+		#"res://assets/hen-b.svg",
+		#"res://assets/hen-b.svg",
 	])
-	position.x = 200
-	position.y = 200
+	position.x = 350
+	position.y = 350
 	self.current_svg_tex()
 	self._loop01()
+	self._loop02()
 
 func _loop01() -> void :
 	while true:
-		await sleep(1.0)
+		await sleep(0.5)
 		next_svg_tex()
-		await signal_process_loop
+		await _top.signal_process_loop
+
+func _loop02() -> void :
+	while true:
+		self.rotation += PI / 180 * 5
+		await _top.signal_process_loop

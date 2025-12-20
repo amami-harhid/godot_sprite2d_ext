@@ -1,0 +1,61 @@
+■ 2025/12/13 プロトタイプ初期版
+次の不具合あり。
+・ SVG画像（大）のスプライトによる衝突判定を行うと ドラッグ速度が遅くなる
+・ 衝突判定の相手のコスチュームを切り替えると、当たっていないのに当たり判定をする（コスチューム１個だけのときは問題なしに見える）
+
+■ 2025/12/19 改修
+・ SVG画像（大）のスプライトによる衝突判定
+画像を囲む矩形(Rect2)内のすべてのピクセルを走査して、「見える点」を特定し、「相手と重なるか？」の当たり判定をしているところを、
+X軸方向に飛び飛びのピクセルにて「当たり判定」を行うことにした。これにより「当たり判定」数を圧縮した。Y軸方向にも圧縮したいがこれは未了。
+・コスチュームの切り替えは、ImageTextureであるSprite2D.textureへのset_iamge()にて画像を入れ替えているのだが、
+複数回のset_image()を繰り返しても、画像を囲む矩形(Rect2)の情報は初回のset_image()のときより変化しないようである。
+画像ごとにImageTextureのインスタンスを保持しておき、Sprite2D.texture　自体を入れ替えることで、画像ごとの矩形(Rect2)を取得できるようになり
+当たっていないのに当たり判定をする問題は解消された
+
+■ 2025/12/20 改修
+当たり判定確認を行うピクセル対象を、X軸と同様にY軸方向にも圧縮する。
+X並びの圧縮は 15%程度の圧縮(PixelSpacing=10のとき)。
+befor tuning size=48097
+after tuning size=6580, %=13.6806869451317
+
+さらにY並びの圧縮は 13%程度の圧縮(PixelSpacing=10のとき)。
+befor tuning size=48097
+after tuning size=6044, %=12.5662723246772
+
+■ 2025/12/20 改修
+Niwatori を ずっと回転し続けているとき、次の場合のNiwatori回転速度が異なる
+(1) CrabがNiwatoriから十分に離れているとき
+(2) CrabがNiwatoriに近いとき（重なっていない）: (1)より回転が遅くなる
+(3) CrabがNiwatoriに触れているとき: (1)と同じ回転速度に見える
+CrabがNiwatoriに近いときに無駄な処理をしているのかもしれない。
+--> (2)はCrab側のピクセルを走査して衝突判定をしている。近いが重なっていない(2)のときは対象ピクセルを最後まで全走査するため
+(1)(3)に比べて時間がかかる。
+
+再現条件は次のとおり
+
+Crab SvgScale = 5.0
+Crab PixelSpacing = 10
+Crab NeighborhoodValue = 10
+
+Niwatori SvgScale = 3.0
+Niwatori PixelSpacing = 10
+Niwatori NeighborhoodValue = 10
+
+【対処】
+Node2D 側で FPS=30 としてみた。
+通常の _process １回ごとに起動すると速すぎて、ピクセル全走査がフレーム１回に収まらない。
+
+const TIME: float = 1.0/30
+var timer = 0
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	timer += delta
+	if timer > TIME:
+		timer -= TIME
+		signal_process_loop.emit()
+	pass
+	
+■ 2025/12/20 今後の改修予定
+Neighborhood 判定条件、改良の余地ありの気がする。
+見た目的に十分に離れている感じのときでも 衝突判定（ピクセル走査）を始めてしまう。
+矩形の中心からみて 一番離れている点（ピクセル）を探し、その点と中心の距離を使用するとよいかもしれない。
