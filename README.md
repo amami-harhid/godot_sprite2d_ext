@@ -11,11 +11,15 @@ A prototype like Scratch3, godot sprite2D extension
 
 Sprite2DExtである「カニ」「ニワトリ」を使用しています。
 
-「カニ」はマウスドラッグで位置を変えることができます。
+![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/scene.png)
 
-![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/img_3021.gif)
+
+「ニワトリ」は右方向へ回転を続けています。
+「カニ」はマウスドラッグで位置を変えることができ、近傍判定、衝突判定を行います。
 
 最初に衝突を検出した場所に 〇を表示させています
+
+![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/img_3022.gif)
 
 サンプルは FPS=30 で動かしています。
 

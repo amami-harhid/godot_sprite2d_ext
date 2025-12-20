@@ -164,7 +164,7 @@ func _is_pixel_touched(_target:Sprite2DExt, counter:int) -> Hit :
 	if _is_neighborhood(target) == false:
 		hiter.hit = false
 		return hiter
-	# 周囲を囲む四角形
+ 	# 周囲を囲む四角形
 	var rect:Rect2 = self.get_rect()
 	var touch:bool = false
 	var svg_obj_key = self._svg_img_keys[self._texture_idx]
