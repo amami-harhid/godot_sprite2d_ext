@@ -10,10 +10,14 @@ A prototype like Scratch3, godot sprite2D extension
 # sample
 
 Sprite2DExtである「カニ」「ニワトリ」を使用しています。
-それぞれ、マウスドラッグで位置を変えることができます。
 
-![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/img_3017.gif)
+「カニ」はマウスドラッグで位置を変えることができます。
 
+![demo](https://raw.githubusercontent.com/wiki/amami-harhid/godot_sprite2d_ext/images/img_3021.gif)
+
+最初に衝突を検出した場所に 〇を表示させています
+
+サンプルは FPS=30 で動かしています。
 
 # 注入したScratch3愛
 
@@ -59,7 +63,8 @@ func _loop() -> void:
 			self.modulate = Color(1, 1, 1)          # 元の色に変える
 		await signal_process_loop                   # Processループタイミングに合わせる
 ```
+
 ### TODO
-今の実装では「微妙に」当たり判定が狂うときがあります。
-今後直していきたい（気が向いたら）
+
+Scratch3のクローン的なことをしたときでも、うまく動作するようにしてみたいです。
 
