@@ -55,17 +55,26 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				_svg_img_map.set(name, svg_obj)
 				var _img = svg_obj.get_image()
 				var _size = _img.get_size()
+				#var _pixel_opaque_arr = []
 				# 横方向の走査
 				for y in range(_size.y):
 					for x in range(_size.x):
 						var pixel = _img.get_pixel(x, y)
 						if pixel.a > 0: # 不透明ピクセルの場合
 							svg_obj.pixel_opaque_arr.append(Vector2(x,y))
-
+							#_pixel_opaque_arr.append(Vector2(x,y))
+				
+				var Center:Vector2 = Vector2(_size.x/2, _size.y/2)
+				var max:float = -INF
+				for pos:Vector2 in svg_obj.pixel_opaque_arr :
+					var d = Center.distance_to(pos)
+					if max < d :
+						max = d
+				svg_obj.distance = max
 				# 連続して不透明のピクセルが並ぶとき、決めた数だけスキップさせる
 				var b_size:int = svg_obj.pixel_opaque_arr.size()
-				svg_obj.opaque_arr_tuning(self.pixel_spacing)
-				var a_size:int = svg_obj.pixel_opaque_tuning_arr.size()
+				svg_obj.opaque_compression(self.pixel_spacing)
+				var a_size:int = svg_obj.pixel_opaque_compression_arr.size()
 
 		else:
 				print("ivalid path = ", path)
@@ -155,13 +164,12 @@ func _is_pixel_touched(_target:Sprite2DExt, counter:int) -> Hit :
 	if _is_neighborhood(target) == false:
 		hiter.hit = false
 		return hiter
-	#var time_start = Time.get_unix_time_from_system()
 	# 周囲を囲む四角形
 	var rect:Rect2 = self.get_rect()
 	var touch:bool = false
 	var svg_obj_key = self._svg_img_keys[self._texture_idx]
 	var svg_obj:SvgObj = self._svg_img_map.get(svg_obj_key)
-	for pos in svg_obj.pixel_opaque_tuning_arr:
+	for pos in svg_obj.pixel_opaque_compression_arr:
 		var _pos = Vector2(pos.x-rect.size.x/2, pos.y-rect.size.y/2)
 		var _pos00:Vector2 = target.to_local(self.to_global(_pos))
 		if target.is_pixel_opaque(_pos00):
@@ -173,7 +181,7 @@ func _is_pixel_touched(_target:Sprite2DExt, counter:int) -> Hit :
 	return hiter
 
 # 相手のスプライトが近傍にあるかを判定する
-func _is_neighborhood(target:Sprite2D) -> bool :
+func _is_neighborhood(target:Sprite2DExt) -> bool :
 	# 相手が空のとき 
 	if target == null :
 		return false
@@ -181,32 +189,35 @@ func _is_neighborhood(target:Sprite2D) -> bool :
 	return self._is_neighborhood_condition(target)
 
 # to use for override
-func _is_neighborhood_condition(target: Sprite2D) -> bool :
+func _is_neighborhood_condition(target: Sprite2DExt) -> bool :
 	# 前提事項
 	# 全スプライトの親の基準位置は トップのNode2Dの左上隅
 	# 自身と相手のポジションの間の距離を計算し、所定の範囲の中にあれば
 	# 「近傍である」と判定する。
 	# 所定の距離とは、それぞれの画像Rectの隅を通る円の半径を足し合わせ、10 加算したものとする
 
+	# 相手のテキスチャー設定が完了していないときは 「近傍でない」として終わる
+	if self._svg_img_keys.size() ==0 or target._svg_img_keys.size() == 0:
+		return false
+
+	# 自身のTexture_idx
+	var texture_idx = self._texture_idx
+	# 相手のTexture_idx
+	var target_texture_idx = target._texture_idx
+	# 自身のsvgObj
+	var svg_key:String = self._svg_img_keys.get(texture_idx)
+	var svg_obj:SvgObj = self._svg_img_map.get(svg_key)
+	# 相手のsvgObj
+	var target_svg_key:String = target._svg_img_keys.get(target_texture_idx)
+	var target_svg_obj:SvgObj = target._svg_img_map.get(target_svg_key)
+	
+	# 近傍最大距離
+	var neighborhood: float = (svg_obj.distance + target_svg_obj.distance)
+
 	# 位置ポジションを取得	
 	var pos:Vector2 = self.position
 	var pos_t:Vector2 = target.position
-	
-	# スプライト画像を囲む四角形(Rect2)を取得
-	var rect1:Rect2 = self.get_rect()
-	var rect2:Rect2 = target.get_rect()
-	
-	# 四角形の相対する頂点間の距離の半分が半径として計算し、２つのスプライトの半径を合計する
-	# 四角形(Rect2)には Scaleの指定、SVGの大きさ(SvgScale)が反映されていないため、大きさを反映させている
-	var r_01: float = (rect1.size * self.scale).distance_to(Vector2(0,0)) /2
-	var r_02: float = (rect2.size * target.scale).distance_to(Vector2(0,0)) /2
-	# 近傍距離
-	var neighborhood: float = r_01 + r_02 + self.neighborhood_value
-	
-	var pos_g = self.to_global(pos)
-	var pos_g_t = target.to_global(pos_t)
-	var pos_g_t_l = self.to_local(pos_g_t)
-	
+
 	# 実際の距離を取得する
 	var distance: float = pos.distance_to(pos_t)
 	# 実際の距離が 近傍距離より大のとき
@@ -229,15 +240,15 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 
-	# fire input signals
-	if Input.is_action_just_pressed("mouse_left"):
-		signal_just_pressed_mouse_left.emit()
-	if Input.is_action_just_released("mouse_left"):
-		signal_just_release_mouse_left.emit()
+	# ドラッグ対応
+	if self.draggable:
+		# fire input signals
+		if Input.is_action_just_pressed("mouse_left"):
+			signal_just_pressed_mouse_left.emit()
+		if Input.is_action_just_released("mouse_left"):
+			signal_just_release_mouse_left.emit()
 	
-	# fire loop signal
-	#_top.signal_process_loop.emit()
-
+# Svgテキスチャー情報
 class SvgObj: 
 	var name : String
 	var svg_text: String
@@ -245,34 +256,40 @@ class SvgObj:
 	var svg_scale_created : float = 1.0
 	var image: Image = Image.new()
 	var texture: ImageTexture = ImageTexture.new()
-	var pixel_opaque_arr = []
-	#var pixel_opaque_arr_y = []
-	var pixel_opaque_tuning_arr = []
+	var pixel_opaque_arr = [] # 不透明ピクセルすべて
+	var pixel_opaque_compression_arr = [] # 不透明ピクセルを圧縮した配列
+	var distance:float = -INF
 	enum Axis { X, Y }
+
+	# ソート用
 	func sort_custom_y(p01:Vector2, p02:Vector2)->bool:
 		if p01.x == p02.x :
 			return p01.y < p02.y
 		else:
 			return p01.x < p02.x
-			
-	func opaque_arr_tuning(skip_count: int)->void:
-		
-		var arr_x = _opaque_arr_tuning(skip_count, Axis.X)
+	
+	# 不透明ピクセル圧縮
+	func opaque_compression(skip_count: int)->void:
+		var _temp_arr = pixel_opaque_arr.duplicate()
+		# X方向へ圧縮
+		var arr_x = _opaque_arr_compression(skip_count, _temp_arr, Axis.X)
 		arr_x.sort_custom(sort_custom_y)
-		pixel_opaque_arr = arr_x
-		var arr_y = _opaque_arr_tuning(skip_count, Axis.Y)
-		pixel_opaque_tuning_arr = arr_y
+		_temp_arr.clear()
+		_temp_arr.append_array(arr_x)
+		# Y方向へ圧縮
+		var arr_y = _opaque_arr_compression(skip_count, _temp_arr, Axis.Y)
+		pixel_opaque_compression_arr.append_array(arr_y)
 
-	func _opaque_arr_tuning(skip_count: int, axis: Axis)-> Array:
+	func _opaque_arr_compression(skip_count: int, pixels:Array, axis: Axis)-> Array:
 		var arr = []
-		var size = pixel_opaque_arr.size()
+		var size = pixels.size()
 		var count = 0
 		for idx in range(size):
-			var pos = pixel_opaque_arr.get(idx)
+			var pos = pixels.get(idx)
 			if idx == 0:
 				arr.append(pos)
 			else:
-				var pos_pre = pixel_opaque_arr.get(idx-1)
+				var pos_pre = pixels.get(idx-1)
 				var pos_diff = pos - pos_pre
 				# 横向きに不透明が連続するとき
 				if (axis == Axis.X and pos_diff.y == 0 and pos_diff.x == 1) or (axis == Axis.Y and pos_diff.x == 0 and pos_diff.y == 1):
