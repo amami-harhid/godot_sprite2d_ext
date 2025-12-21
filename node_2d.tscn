@@ -10,13 +10,12 @@ script = ExtResource("1_epypp")
 
 [node name="Grab" type="Sprite2D" parent="."]
 z_index = 9
-rotation = -0.61086524
 script = ExtResource("1_wtcfe")
-svg_scale = 5.0
+pixel_spacing = 2
 draggable = true
 
 [node name="Niwatori" type="Sprite2D" parent="."]
-scale = Vector2(-1, -1)
+rotation = 0.5794493
 script = ExtResource("2_0e48y")
 svg_scale = 3.0
 
@@ -28,6 +27,7 @@ offset_bottom = 732.0
 text = "ニワトリは 1秒ごと、カニは0.5秒ごとに、コスチュームを切り替えています"
 
 [node name="Circle" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.4627451)
 z_index = 20
 position = Vector2(50, 50)
 texture = ExtResource("4_0hol4")

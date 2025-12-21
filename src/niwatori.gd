@@ -12,9 +12,9 @@ func _ready() -> void:
 		#"res://assets/hen-b.svg",
 		#"res://assets/hen-b.svg",
 	])
+	self.current_svg_tex()
 	position.x = 350
 	position.y = 350
-	self.current_svg_tex()
 	self._loop01()
 	self._loop02()
 

@@ -10,9 +10,10 @@ func _ready() -> void:
 		"res://assets/crab-a.svg",
 		"res://assets/crab-b.svg",
 	])
+	self.current_svg_tex()
+
 	position.x = 1000
 	position.y = 500
-	self.current_svg_tex()
 
 	# 無限ループスレッドを起動（３個）
 	_loop01()
@@ -25,9 +26,9 @@ func _loop01() -> void :
 		#next_svg_tex()
 		if Input.is_action_just_pressed("key_escape"):
 			break
-		if Input.is_action_just_pressed("key_left"):
+		if Input.is_action_pressed("key_left"):
 			self.position.x -= 0.3
-		if Input.is_action_just_pressed("key_right"):
+		if Input.is_action_pressed("key_right"):
 			self.position.x += 0.3
 		#await sleep(0.5)
 		await _top.signal_process_loop
@@ -41,9 +42,8 @@ func _loop02() -> void:
 	#circle.position = Vector2(0,0)
 	var target:Sprite2DExt = $"/root/Node2D/Niwatori"
 	while true:
-		counter+=1
 		# 1秒ごと（Niwatoriのコスチューム切り替えのタイミングで、falseになる. なぜかな？
-		var hitter:Hit = self._is_pixel_touched(target, counter)
+		var hitter:Hit = self._is_pixel_touched(target)
 		if hitter.hit == true:
 			#circle.position = hitter.position 
 			circle.position = hitter.position
