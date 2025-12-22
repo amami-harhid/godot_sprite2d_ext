@@ -1,4 +1,4 @@
-class_name Costumes
+class_name SvgCostumes
 
 var sprite: Sprite2DExt
 var neighborhood_value: int = 10
@@ -52,7 +52,7 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				#print("svg_obj.pixel_opaque_compression_arr=",svg_obj.pixel_opaque_compression_arr)
 				svg_obj.distance = calculate_distance(svg_obj)
 				#var a_size:int = svg_obj.pixel_opaque_compression_arr.size()
-				print("distance=" , svg_obj.distance)
+				#print("distance=" , svg_obj.distance)
 		else:
 			print("ivalid path = ", path)
 
@@ -169,7 +169,7 @@ func _is_neighborhood_condition(target: Sprite2DExt) -> bool :
 	# 自身のTexture_idx
 	var texture_idx = self._texture_idx
 	# 相手のTexture_idx
-	var target_texture_idx = target._texture_idx
+	var target_texture_idx = target.costumes._texture_idx
 	# 自身のsvgObj
 	var svg_key:String = self._svg_img_keys.get(texture_idx)
 	var svg_obj:SvgObj = self._svg_img_map.get(svg_key)

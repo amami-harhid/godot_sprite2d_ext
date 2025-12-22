@@ -11,7 +11,6 @@ func _ready() -> void:
 		"res://assets/crab-b.svg",
 	])
 	costumes.current_svg_tex()
-	print("costumes._svg_img_keys=", costumes._svg_img_keys)
 	position.x = 1000
 	position.y = 500
 

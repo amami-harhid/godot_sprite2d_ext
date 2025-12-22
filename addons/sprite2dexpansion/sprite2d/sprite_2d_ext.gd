@@ -17,21 +17,11 @@ signal signal_just_release_mouse_left()
 # drag可否
 @export var draggable:bool = false
 
-# SVG 関連
-var _svg_img_map = {}
-var _svg_img_keys = []
-
-# テキスチャの位置
-var _texture_idx = 0
-
-# イメージ
-#var _img = Image.new()
-
 @onready var TOP:Node2D = $"/root/Node2D"
 
 @onready var prev_scale: Vector2 = self.scale
 
-@onready var costumes = Costumes.new(self)
+@onready var costumes:SvgCostumes = SvgCostumes.new(self)
 
 const VECTOR2_INF = Vector2(INF,INF) 
 var _mouse_dis:Vector2 = VECTOR2_INF
