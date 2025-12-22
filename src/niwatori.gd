@@ -6,13 +6,13 @@ extends Sprite2DExt
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
-	self.svg_file_path_setting([
+	costumes.svg_file_path_setting([
 		"res://assets/hen-a.svg",
 		"res://assets/hen-b.svg",
 		#"res://assets/hen-b.svg",
 		#"res://assets/hen-b.svg",
 	])
-	self.current_svg_tex()
+	costumes.current_svg_tex()
 	position.x = 350
 	position.y = 350
 	self._loop01()
@@ -21,10 +21,10 @@ func _ready() -> void:
 func _loop01() -> void :
 	while true:
 		await sleep(0.5)
-		next_svg_tex()
-		await _top.signal_process_loop
+		costumes.next_svg_tex()
+		await TOP.signal_process_loop
 
 func _loop02() -> void :
 	while true:
 		self.rotation += PI / 180 * 5
-		await _top.signal_process_loop
+		await TOP.signal_process_loop

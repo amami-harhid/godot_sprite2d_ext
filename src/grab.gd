@@ -6,12 +6,12 @@ extends Sprite2DExt
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
-	self.svg_file_path_setting([
+	costumes.svg_file_path_setting([
 		"res://assets/crab-a.svg",
 		"res://assets/crab-b.svg",
 	])
-	self.current_svg_tex()
-
+	costumes.current_svg_tex()
+	print("costumes._svg_img_keys=", costumes._svg_img_keys)
 	position.x = 1000
 	position.y = 500
 
@@ -19,7 +19,6 @@ func _ready() -> void:
 	_loop01()
 	_loop02()
 	_loop03()
-	pass
 
 func _loop01() -> void :
 	while true:
@@ -31,7 +30,7 @@ func _loop01() -> void :
 		if Input.is_action_pressed("key_right"):
 			self.position.x += 0.3
 		#await sleep(0.5)
-		await _top.signal_process_loop
+		await TOP.signal_process_loop
 		
 func _loop02() -> void:
 	var counter = 0
@@ -43,7 +42,7 @@ func _loop02() -> void:
 	var target:Sprite2DExt = $"/root/Node2D/Niwatori"
 	while true:
 		# 1秒ごと（Niwatoriのコスチューム切り替えのタイミングで、falseになる. なぜかな？
-		var hitter:Hit = self._is_pixel_touched(target)
+		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit == true:
 			#circle.position = hitter.position 
 			circle.position = hitter.position
@@ -57,7 +56,7 @@ func _loop02() -> void:
 			circle.visible = false
 			
 		
-		await _top.signal_process_loop
+		await TOP.signal_process_loop
 	
 
 func _loop03() -> void:
@@ -66,4 +65,4 @@ func _loop03() -> void:
 		
 		#if Input.is_action_just_pressed("key_escape"):
 		#	break
-		await _top.signal_process_loop
+		await TOP.signal_process_loop
