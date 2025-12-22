@@ -17,7 +17,7 @@ signal signal_just_release_mouse_left()
 # drag可否
 @export var draggable:bool = false
 
-@onready var TOP:Node2D = $"/root/Node2D"
+@onready var TOP:Node2D = $"/root/Scene01"
 
 @onready var prev_scale: Vector2 = self.scale
 
