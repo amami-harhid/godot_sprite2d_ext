@@ -47,12 +47,7 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				# 連続して不透明のピクセルが並ぶとき、決めた数だけスキップさせる
 				var b_size:int = svg_obj.pixel_opaque_arr.size()
 				svg_obj.opaque_compression(self.sprite.pixel_spacing)
-				#var __size:int = svg_obj.pixel_opaque_compression_arr.size()
-				#print("size=", __size)
-				#print("svg_obj.pixel_opaque_compression_arr=",svg_obj.pixel_opaque_compression_arr)
-				svg_obj.distance = calculate_distance(svg_obj)
-				#var a_size:int = svg_obj.pixel_opaque_compression_arr.size()
-				#print("distance=" , svg_obj.distance)
+				#svg_obj.distance = calculate_distance(svg_obj)
 		else:
 			print("ivalid path = ", path)
 
@@ -65,7 +60,6 @@ func calculate_distance(svg_obj: SvgObj) -> float :
 		var d = center.distance_to( self.sprite.to_global(pos) )
 		if max < d :
 			max = d
-	
 	return max
 	
 func current_svg_tex() -> void:
@@ -173,14 +167,15 @@ func _is_neighborhood_condition(target: Sprite2DExt) -> bool :
 	# 自身のsvgObj
 	var svg_key:String = self._svg_img_keys.get(texture_idx)
 	var svg_obj:SvgObj = self._svg_img_map.get(svg_key)
+	svg_obj.distance = calculate_distance(svg_obj)
 	# 相手のsvgObj
 	var target_svg_key:String = target.costumes._svg_img_keys.get(target_texture_idx)
 	var target_svg_obj:SvgObj = target.costumes._svg_img_map.get(target_svg_key)
+	target_svg_obj.distance = calculate_distance(target_svg_obj)
 	
 	# 近傍最大距離( global )
 	# TODO distance : Scaleを考慮する必要あり。
 	var neighborhood: float = (svg_obj.distance + target_svg_obj.distance)
-
 	# 位置ポジションを取得	
 	var pos:Vector2 = self.sprite.position
 	var pos_t:Vector2 = target.costumes.sprite.position

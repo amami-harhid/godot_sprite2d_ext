@@ -14,12 +14,12 @@ enum Axis { X, Y }
 
 # 不透明ピクセルの境界だけを残す
 func opaque_compression(skip_count: int)->void:
-	var arr = self._opaque_changed(self.image)
+	var arr = self._opaque_changed(self.image, skip_count)
 	pixel_opaque_compression_arr.append_array(arr)
 	return
 
 # 周囲の線のみを抽出する
-func _opaque_changed(image:Image) -> Array:
+func _opaque_changed(image:Image, skip_count: int) -> Array:
 	var size:Vector2i = image.get_size()	
 	var arr = []
 	for _x:int in range(size.x):
@@ -52,8 +52,13 @@ func _opaque_changed(image:Image) -> Array:
 		if pixel.a > 0:
 			#arr.append(pixel)
 			arr.append(Vector2(x, size.y -1))
-				
-	return arr
+		
+	var out:Array = []
+	for idx in arr.size():
+		if skip_count == 0 or idx % skip_count == 0:
+			out.append(arr.get(idx))
+		
+	return out
 		
 
 func get_image()->Image:

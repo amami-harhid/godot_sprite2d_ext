@@ -6,6 +6,8 @@ extends Sprite2DExt
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
+	position.x = 350
+	position.y = 350
 	costumes.svg_file_path_setting([
 		"res://assets/hen-a.svg",
 		"res://assets/hen-b.svg",
@@ -13,8 +15,6 @@ func _ready() -> void:
 		#"res://assets/hen-b.svg",
 	])
 	costumes.current_svg_tex()
-	position.x = 350
-	position.y = 350
 	self._loop01()
 	self._loop02()
 

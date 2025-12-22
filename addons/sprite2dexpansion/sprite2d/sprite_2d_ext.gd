@@ -10,9 +10,9 @@ signal signal_just_release_mouse_left()
 @export var svg_scale: float = 1.0
 
 # Bitmap Collision pixel spacing
-@export var pixel_spacing: int = 10
+@export var pixel_spacing: int = 0
 
-@export var neighborhood_value: int = 10
+#@export var neighborhood_value: int = 10
 
 # drag可否
 @export var draggable:bool = false

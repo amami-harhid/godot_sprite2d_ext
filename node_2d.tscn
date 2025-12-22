@@ -11,7 +11,7 @@ script = ExtResource("1_epypp")
 [node name="Grab" type="Sprite2D" parent="."]
 z_index = 9
 script = ExtResource("1_wtcfe")
-pixel_spacing = 2
+svg_scale = 4.0
 draggable = true
 
 [node name="Niwatori" type="Sprite2D" parent="."]

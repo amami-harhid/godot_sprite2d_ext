@@ -6,13 +6,13 @@ extends Sprite2DExt
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
+	position.x = 1000
+	position.y = 500
 	costumes.svg_file_path_setting([
 		"res://assets/crab-a.svg",
 		"res://assets/crab-b.svg",
 	])
 	costumes.current_svg_tex()
-	position.x = 1000
-	position.y = 500
 
 	# 無限ループスレッドを起動（３個）
 	_loop01()
