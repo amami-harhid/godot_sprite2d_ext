@@ -14,7 +14,7 @@ func _ready() -> void:
 		"res://assets/ball-a.svg"
 	])
 	if original:
-		position.x = get_viewport_rect().size.x / 4
+		position.x = get_viewport_rect().size.x / 10
 		position.y = get_viewport_rect().size.y - 10
 	costumes.current_svg_tex()
 	if original:
@@ -25,36 +25,41 @@ func _ready() -> void:
 		_loop_hit()
 
 func _loop_clone() ->void:
-	var limit = 20
-	var count = 0
-	while true:
-		if count > limit:
-			break
-		_clone(count)
-		count += 1
-		await ThreadUtils.signal_process_loop
+	for idx in range(10):
+			
+		var limit = 20
+		var count = 0
+		while original:
+			if count > limit:
+				break
+			_clone(count)
+			count += 1
+		await ThreadUtils.sleep(3)
+		await ThreadUtils.waitNextFrame
 
 func _clone(count:int) ->void:
 	var clone:Sprite2DExt = self.duplicate()
 	clone.original = false
 	clone.visible = true
 	clone.position.x += 25 * count
-	TOP.add_child.call_deferred(clone)
+	# 同じ階層に追加する
+	add_sibling.call_deferred(clone)
 
 func _loop_shoot()->void:
-	while true:
+	while !original:
 		self.position.y -= 10
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 
 func _loop_hit()->void:
 	var target :Sprite2DExt = $"/root/Scene02/Cat"
-	while true:
+	while !original:
 		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit :
 			break
 		if position.y < 0:
 			break
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 
 	visible = false
+	await ThreadUtils.sleep(1)	
 	queue_free()

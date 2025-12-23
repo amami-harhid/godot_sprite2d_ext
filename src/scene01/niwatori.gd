@@ -22,9 +22,9 @@ func _loop01() -> void :
 	while true:
 		await ThreadUtils.sleep(0.5)
 		costumes.next_svg_tex()
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 
 func _loop02() -> void :
 	while true:
 		self.rotation += PI / 180 * 5
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame

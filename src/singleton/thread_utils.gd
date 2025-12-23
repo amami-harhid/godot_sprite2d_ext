@@ -3,7 +3,7 @@ extends Node
 
 # プロセスのループの同期をとるためのシグナル
 # シーン内の一か所（トップノード内）で emit をする前提とする
-signal signal_process_loop()
+signal waitNextFrame()
 
 # PROCESS_ALWAYS( Engine停止時に、停止する )
 # when false, the timer will be paused when setting paused to true

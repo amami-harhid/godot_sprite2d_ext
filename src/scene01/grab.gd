@@ -30,7 +30,7 @@ func _loop01() -> void :
 		if Input.is_action_pressed("key_right"):
 			self.position.x += 0.3
 		#await sleep(0.5)
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 		
 func _loop02() -> void:
 	#var counter = 0
@@ -59,16 +59,16 @@ func _loop02() -> void:
 			circle.visible = false
 			
 		
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 	
 
 func _loop03() -> void:
 	while draggable:
 		self._drag_process()		
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame
 
 func _loop04() -> void :
 	while true:
 		await ThreadUtils.sleep(0.5)
 		costumes.next_svg_tex()
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame

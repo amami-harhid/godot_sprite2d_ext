@@ -19,11 +19,18 @@ func _ready() -> void:
 
 func _loop_rotate()->void:
 	while true:
-		rotation += PI/180 * 5
-		await ThreadUtils.signal_process_loop
+		rotation += PI/180 * 10
+		await ThreadUtils.sleep(0.033)
+		# 他の同期型(waitNextFrame)ループが多い場合に
+		# 目立つ事象
+		# sleepで待たないループで、且つ、他のループが多い場合
+		# シグナルが滞留するみたい。
+		# 他処理がなくなったときに滞留している
+		# シグナルが一斉に送られてきて、回転が速くなる
+		await ThreadUtils.waitNextFrame
 
 func _loop_next_costume()->void:
 	while true:
 		self.costumes.next_svg_tex()
 		await ThreadUtils.sleep(0.2)
-		await ThreadUtils.signal_process_loop
+		await ThreadUtils.waitNextFrame

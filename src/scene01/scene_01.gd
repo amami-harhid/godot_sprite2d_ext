@@ -14,15 +14,11 @@ func _process(delta: float) -> void:
 	timer += delta
 	if timer > TIME:
 		timer -= TIME
-		ThreadUtils.signal_process_loop.emit()
+		ThreadUtils.waitNextFrame.emit()
 		
 func _loop_next_scene()->void:
-	await ThreadUtils.sleep(0.5)
+	await ThreadUtils.sleep(1)
 	visible = true
-	while true:
-		if Input.is_action_just_pressed("key_space"):
-			break
-		await ThreadUtils.signal_process_loop
-	
+	await ThreadUtils.sleep(5)
 	visible = false
 	ScenesManager.load_scene02()
