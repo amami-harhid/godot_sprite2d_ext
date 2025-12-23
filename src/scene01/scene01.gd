@@ -1,6 +1,6 @@
 extends Node2D
 
-signal signal_process_loop()
+#signal signal_process_loop()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -13,5 +13,5 @@ func _process(delta: float) -> void:
 	timer += delta
 	if timer > TIME:
 		timer -= TIME
-		signal_process_loop.emit()
+		ThreadUtils.signal_process_loop.emit()
 	pass

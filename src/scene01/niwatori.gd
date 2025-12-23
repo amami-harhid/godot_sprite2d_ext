@@ -20,11 +20,11 @@ func _ready() -> void:
 
 func _loop01() -> void :
 	while true:
-		await sleep(0.5)
+		await ThreadUtils.sleep(0.5)
 		costumes.next_svg_tex()
-		await TOP.signal_process_loop
+		await ThreadUtils.signal_process_loop
 
 func _loop02() -> void :
 	while true:
 		self.rotation += PI / 180 * 5
-		await TOP.signal_process_loop
+		await ThreadUtils.signal_process_loop

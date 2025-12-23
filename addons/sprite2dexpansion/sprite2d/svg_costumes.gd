@@ -33,34 +33,20 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				svg_obj.svg_scale = self.sprite.svg_scale
 				svg_obj.create_svg_from_text()
 				_svg_img_map.set(name, svg_obj)
+				# 不透明なピクセル座標（Local)を配列化
 				var _img = svg_obj.get_image()
-				var _size = _img.get_size()
-				
-				# 横方向の走査
-				for y in range(_size.y):
-					for x in range(_size.x):
-						var pixel = _img.get_pixel(x, y)
-						if pixel.a > 0: # 不透明ピクセルの場合
-							svg_obj.pixel_opaque_arr.append(Vector2(x,y))
-							#_pixel_opaque_arr.append(Vector2(x,y))
-			
-				# 連続して不透明のピクセルが並ぶとき、決めた数だけスキップさせる
-				var b_size:int = svg_obj.pixel_opaque_arr.size()
-				svg_obj.opaque_compression(self.sprite.pixel_spacing)
-				#svg_obj.distance = calculate_distance(svg_obj)
+				svg_obj.surrounding_point_arr = BitmapUtils.surrounding_points(_img, self.sprite.pixel_spacing)
 		else:
 			print("ivalid path = ", path)
 
+# 画像矩形をグローバル座標に変換し、矩形の中に描かれるイメージ外周点のうちから
+# 中心より最も遠い点を求める
 func calculate_distance(svg_obj: SvgObj) -> float :
-	var _size = svg_obj.image.get_size()
 	var _rect = svg_obj.rect
-	var center:Vector2 = self.sprite.to_global( Vector2( _rect.size.x/2, _rect.size.y/2 ))
-	var max:float = -INF
-	for pos:Vector2 in svg_obj.pixel_opaque_compression_arr :
-		var d = center.distance_to( self.sprite.to_global(pos) )
-		if max < d :
-			max = d
-	return max
+	var _global_center:Vector2 = self.sprite.to_global( Vector2( _rect.size.x/2, _rect.size.y/2 ))
+	var _pixels = BitmapUtils.pixel_to_global(self.sprite, svg_obj.surrounding_point_arr)
+	var _fartherst = BitmapUtils.point_fartherst_from_center(_global_center, _pixels)
+	return _fartherst
 	
 func current_svg_tex() -> void:
 	self._draw_svg()
@@ -97,51 +83,8 @@ enum CALLER  {OWN, RECALL}
 # スプライト自身の表示サイズが大のときの高速化を図りたい
 func _is_pixel_touched(_target:Sprite2DExt, caller:CALLER = CALLER.OWN) -> Hit :
 	#var circle :Sprite2D = $"/root/Node2D/Circle"
-	var hitter:Hit = Hit.new()
-	var target:Sprite2DExt = _target
-	if _is_neighborhood(target) == false:
-		hitter.hit = false
-		return hitter
- 	# 周囲を囲む四角形
-	var rect:Rect2 = self.sprite.get_rect()
-	var touch:bool = false
-	var svg_obj_key = self._svg_img_keys[self._texture_idx]
-	var svg_obj:SvgObj = self._svg_img_map.get(svg_obj_key)
-	# 不透明の境界の点を使い、衝突判定をする
-	for pos in svg_obj.pixel_opaque_compression_arr:
-		var _pos = Vector2(pos.x-rect.size.x/2, pos.y-rect.size.y/2)
-		var _pos00:Vector2 = target.to_local(self.sprite.to_global(_pos))
-		# 前後左右の矩形の９個の点で衝突判定をする
-		var _diff:int = 1
-		var _pos00_arr = [
-			_pos00 + Vector2(-1,-1)*_diff,
-			_pos00 + Vector2(-1, 0)*_diff,
-			_pos00 + Vector2(-1, 1)*_diff,
-			_pos00 + Vector2( 0,-1)*_diff,
-			_pos00,
-			_pos00 + Vector2( 0, 1)*_diff,
-			_pos00 + Vector2( 1,-1)*_diff,
-			_pos00 + Vector2( 1, 0)*_diff,
-			_pos00 + Vector2( 1, 1)*_diff,
-		]
-		for __pos00:Vector2 in _pos00_arr:
-			if target.costumes.sprite.is_pixel_opaque(__pos00):
-				hitter.position = self.sprite.to_global(_pos)
-				hitter.hit = true
-				return hitter
-
-	# 周囲の線だけによる衝突判定であるため、相手が自身の画像のなかに
-	# 完全に入ってしまっているときには「衝突」とみなされない
-	# その場合、相手側から衝突判定を再度行う。
-	if( caller == CALLER.OWN):
-		# 自身を起点とした衝突判定の場合
-		# 相手の周囲の線から自身への衝突判定
-		var hitter2 = target.costumes._is_pixel_touched(self.sprite, CALLER.RECALL)
-		if hitter2.hit == true:
-			return hitter2
-		
-	hitter.position = Vector2(-INF, -INF)
-	return hitter
+	var hit = SpriteUtils.is_touched(self, _target.costumes)
+	return hit
 
 # 相手のスプライトが近傍にあるかを判定する
 func _is_neighborhood(target:Sprite2DExt) -> bool :

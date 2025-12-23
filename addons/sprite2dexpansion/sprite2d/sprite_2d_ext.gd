@@ -6,22 +6,12 @@ class_name Sprite2DExt
 #signal signal_process_loop()
 signal signal_just_pressed_mouse_left()
 signal signal_just_release_mouse_left()
-# SVGをレンダリングする拡大率
-@export var svg_scale: float = 1.0
-
-# Bitmap Collision pixel spacing
-@export var pixel_spacing: int = 0
-
 #@export var neighborhood_value: int = 10
 
 # drag可否
 @export var draggable:bool = false
 
 @onready var TOP:Node2D = $"/root/Scene01"
-
-@onready var prev_scale: Vector2 = self.scale
-
-@onready var costumes:SvgCostumes = SvgCostumes.new(self)
 
 const VECTOR2_INF = Vector2(INF,INF) 
 var _mouse_dis:Vector2 = VECTOR2_INF

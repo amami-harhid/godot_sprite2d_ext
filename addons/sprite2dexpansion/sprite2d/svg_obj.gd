@@ -8,58 +8,9 @@ var svg_scale_created : float = 1.0
 var image: Image = Image.new()
 var texture: ImageTexture = ImageTexture.new()
 var pixel_opaque_arr = [] # 不透明ピクセルすべて
-var pixel_opaque_compression_arr = [] # 不透明ピクセルを圧縮した配列
+var surrounding_point_arr = [] # 不透明ピクセルを圧縮した配列
 var distance:float = -INF
 enum Axis { X, Y }
-
-# 不透明ピクセルの境界だけを残す
-func opaque_compression(skip_count: int)->void:
-	var arr = self._opaque_changed(self.image, skip_count)
-	pixel_opaque_compression_arr.append_array(arr)
-	return
-
-# 周囲の線のみを抽出する
-func _opaque_changed(image:Image, skip_count: int) -> Array:
-	var size:Vector2i = image.get_size()	
-	var arr = []
-	for _x:int in range(size.x):
-		var x = _x
-		var pixel = image.get_pixel(x, 0)
-		if pixel.a > 0:
-			arr.append(Vector2(_x, 0))
-		for _y:int in range(size.y -2):
-			var y = _y + 1
-			var pixel00 = image.get_pixel(x, y-1)
-			var pixel01 = image.get_pixel(x, y)
-			var pixel02 = image.get_pixel(x, y+1)
-			if pixel01.a > 0:			
-				if pixel00.a > 0 and pixel02.a > 0:
-					if x == 0 or x == size.x -1 :
-						#arr.append(pixel01)
-						arr.append(Vector2(x, y))
-					else:
-						var pixel_x_00 = image.get_pixel(x-1, y)
-						var pixel_x_02 = image.get_pixel(x+1, y)
-						if pixel_x_00.a > 0 and pixel_x_02.a > 0 :
-							continue
-						else:
-							#arr.append(pixel01)
-							arr.append(Vector2(x, y))
-				else:
-					#arr.append(pixel01)
-					arr.append(Vector2(x, y))
-		pixel = image.get_pixel(x, size.y-1)
-		if pixel.a > 0:
-			#arr.append(pixel)
-			arr.append(Vector2(x, size.y -1))
-		
-	var out:Array = []
-	for idx in arr.size():
-		if skip_count == 0 or idx % skip_count == 0:
-			out.append(arr.get(idx))
-		
-	return out
-		
 
 func get_image()->Image:
 	if self.svg_scale != self.svg_scale_created:

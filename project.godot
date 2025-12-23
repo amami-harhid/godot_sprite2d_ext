@@ -15,6 +15,13 @@ run/main_scene="uid://crn0kv5hj1rye"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Manager="*res://src/singleton/manager.gd"
+BitmapUtils="*res://src/singleton/bitmap_utils.gd"
+SpriteUtils="*res://src/singleton/sprite_utils.gd"
+ThreadUtils="*res://src/singleton/thread_utils.gd"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/sprite2dexpansion/plugin.cfg")

@@ -30,10 +30,10 @@ func _loop01() -> void :
 		if Input.is_action_pressed("key_right"):
 			self.position.x += 0.3
 		#await sleep(0.5)
-		await TOP.signal_process_loop
+		await ThreadUtils.signal_process_loop
 		
 func _loop02() -> void:
-	var counter = 0
+	#var counter = 0
 	var label:Label = $"/root/Scene01/Label"
 	var circle :Sprite2D = $"/root/Scene01/Circle"
 	circle.visible = false # 隠す
@@ -59,19 +59,16 @@ func _loop02() -> void:
 			circle.visible = false
 			
 		
-		await TOP.signal_process_loop
+		await ThreadUtils.signal_process_loop
 	
 
 func _loop03() -> void:
 	while draggable:
-		self._drag_process()
-		
-		#if Input.is_action_just_pressed("key_escape"):
-		#	break
-		await TOP.signal_process_loop
+		self._drag_process()		
+		await ThreadUtils.signal_process_loop
 
 func _loop04() -> void :
 	while true:
-		await sleep(0.5)
+		await ThreadUtils.sleep(0.5)
 		costumes.next_svg_tex()
-		await TOP.signal_process_loop
+		await ThreadUtils.signal_process_loop
