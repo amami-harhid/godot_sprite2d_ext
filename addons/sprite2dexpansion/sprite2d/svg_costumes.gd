@@ -50,6 +50,7 @@ func calculate_distance(svg_obj: SvgObj) -> float :
 	
 func current_svg_tex() -> void:
 	self._draw_svg()
+
 func next_svg_tex() -> void:
 	if self._svg_img_keys.size() == 1:
 		return
@@ -85,52 +86,3 @@ func _is_pixel_touched(_target:Sprite2DExt, caller:CALLER = CALLER.OWN) -> Hit :
 	#var circle :Sprite2D = $"/root/Node2D/Circle"
 	var hit = SpriteUtils.is_touched(self, _target.costumes)
 	return hit
-
-# 相手のスプライトが近傍にあるかを判定する
-func _is_neighborhood(target:Sprite2DExt) -> bool :
-	# 相手が空のとき 
-	if target == null or target.costumes == null :
-		return false
-
-	return self._is_neighborhood_condition(target)
-
-# to use for override
-func _is_neighborhood_condition(target: Sprite2DExt) -> bool :
-	# 前提事項
-	# 全スプライトの親の基準位置は トップのNode2Dの左上隅
-
-	# 相手のテキスチャー設定が完了していないときは 「近傍でない」として終わる
-	if self._svg_img_keys.size() ==0 or target.costumes._svg_img_keys.size() == 0:
-		return false
-
-	# 自身のTexture_idx
-	var texture_idx = self._texture_idx
-	# 相手のTexture_idx
-	var target_texture_idx = target.costumes._texture_idx
-	# 自身のsvgObj
-	var svg_key:String = self._svg_img_keys.get(texture_idx)
-	var svg_obj:SvgObj = self._svg_img_map.get(svg_key)
-	svg_obj.distance = calculate_distance(svg_obj)
-	# 相手のsvgObj
-	var target_svg_key:String = target.costumes._svg_img_keys.get(target_texture_idx)
-	var target_svg_obj:SvgObj = target.costumes._svg_img_map.get(target_svg_key)
-	target_svg_obj.distance = calculate_distance(target_svg_obj)
-	
-	# 近傍最大距離( global )
-	# TODO distance : Scaleを考慮する必要あり。
-	var neighborhood: float = (svg_obj.distance + target_svg_obj.distance)
-	# 位置ポジションを取得	
-	var pos:Vector2 = self.sprite.position
-	var pos_t:Vector2 = target.costumes.sprite.position
-	#print("position self=", pos, ", target=", pos_t)
-	# 実際の距離を取得する( global )
-	var distance: float = pos.distance_to(pos_t)
-	# 実際の距離が 近傍距離より大のとき
-	#print("distance =%f , neighborhood =%f" % [distance, neighborhood])
-	if distance > neighborhood:
-		# 近傍にはない
-		return false
-	else:
-		# 近傍にある
-		return true
-	

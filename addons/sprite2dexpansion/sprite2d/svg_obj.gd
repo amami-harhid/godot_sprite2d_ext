@@ -7,8 +7,7 @@ var svg_scale: float = 1.0
 var svg_scale_created : float = 1.0
 var image: Image = Image.new()
 var texture: ImageTexture = ImageTexture.new()
-var pixel_opaque_arr = [] # 不透明ピクセルすべて
-var surrounding_point_arr = [] # 不透明ピクセルを圧縮した配列
+var surrounding_point_arr = [] # 不透明部分の外周ピクセル配列
 var distance:float = -INF
 enum Axis { X, Y }
 

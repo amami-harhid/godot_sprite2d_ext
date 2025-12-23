@@ -1,6 +1,8 @@
 # ThreadUtils
 extends Node
 
+# プロセスのループの同期をとるためのシグナル
+# シーン内の一か所（トップノード内）で emit をする前提とする
 signal signal_process_loop()
 
 # PROCESS_ALWAYS( Engine停止時に、停止する )
