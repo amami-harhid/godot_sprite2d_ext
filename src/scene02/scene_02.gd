@@ -1,10 +1,9 @@
 extends Node2D
 
-#signal signal_process_loop()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	_loop_next_scene()
 
 const TIME: float = 1.0/30   # FPS = 30
 
@@ -15,4 +14,14 @@ func _process(delta: float) -> void:
 	if timer > TIME:
 		timer -= TIME
 		ThreadUtils.signal_process_loop.emit()
-	pass
+
+func _loop_next_scene()->void:
+	await ThreadUtils.sleep(0.5)
+	visible = true
+	while true:
+		if Input.is_action_just_pressed("key_space"):
+			break
+		await ThreadUtils.signal_process_loop
+
+	visible = false
+	ScenesManager.load_scene01()

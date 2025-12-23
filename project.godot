@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Manager="*res://src/singleton/manager.gd"
+ScenesManager="*res://src/singleton/scenes_manager.gd"
 BitmapUtils="*res://src/singleton/bitmap_utils.gd"
 SpriteUtils="*res://src/singleton/sprite_utils.gd"
 ThreadUtils="*res://src/singleton/thread_utils.gd"

@@ -1,17 +1,11 @@
 extends Sprite2DSvg
 class_name Sprite2DExt
 
-# ループ内の休止(await)を解除するシグナル
-# _processの中で emit される
-#signal signal_process_loop()
 signal signal_just_pressed_mouse_left()
 signal signal_just_release_mouse_left()
-#@export var neighborhood_value: int = 10
 
 # drag可否
 @export var draggable:bool = false
-
-@onready var TOP:Node2D = $"/root/Scene01"
 
 const VECTOR2_INF = Vector2(INF,INF) 
 var _mouse_dis:Vector2 = VECTOR2_INF
@@ -45,7 +39,6 @@ func _drag_process() -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	#_top = self.get_parent()
 	if self.draggable:
 		_preset_dragging()
 
