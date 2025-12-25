@@ -9,13 +9,18 @@ func is_touched( own: SvgCostumes, target:SvgCostumes, caller:CALLER = CALLER.OW
 		hitter.hit = false
 		return hitter
 
+	var own_svg_img_keys = own.sprite._original_sprite.costumes._svg_img_keys
+	var own_svg_img_map = own.sprite._original_sprite.costumes._svg_img_map
+	var target_svg_img_keys = target.sprite._original_sprite.costumes._svg_img_keys
+	var target_svg_img_map = target.sprite._original_sprite.costumes._svg_img_map	
+
 	if is_neighborhood(own, target) == false:
 		hitter.hit = false
 		return hitter
 	
 	var rect:Rect2 = own.sprite.get_rect()
-	var svg_obj_key = own._svg_img_keys[own._texture_idx]
-	var svg_obj:SvgObj = own._svg_img_map.get(svg_obj_key)
+	var svg_obj_key = own_svg_img_keys[own._texture_idx]
+	var svg_obj:SvgObj = own_svg_img_map.get(svg_obj_key)
 	# 不透明の境界の点を使い、衝突判定をする
 	for pos in svg_obj.surrounding_point_arr:
 		var _pos = Vector2(pos.x-rect.size.x/2, pos.y-rect.size.y/2)
@@ -55,10 +60,14 @@ func is_touched( own: SvgCostumes, target:SvgCostumes, caller:CALLER = CALLER.OW
 # 近傍にある
 func is_neighborhood(own: SvgCostumes, target:SvgCostumes)->bool:
 	
+	var own_svg_img_keys = own.sprite._original_sprite.costumes._svg_img_keys
+	var own_svg_img_map = own.sprite._original_sprite.costumes._svg_img_map
+	var target_svg_img_keys = target.sprite._original_sprite.costumes._svg_img_keys
+	var target_svg_img_map = target.sprite._original_sprite.costumes._svg_img_map	
 	# 前提事項
 	# 全スプライトの親の基準位置は トップのNode2Dの左上隅
 	# 相手のテキスチャー設定が完了していないときは 「近傍でない」として終わる
-	if own._svg_img_keys.size() ==0 or target._svg_img_keys.size() == 0:
+	if own_svg_img_keys.size() ==0 or target_svg_img_keys.size() == 0:
 		return false
 
 	# 自身のTexture_idx
@@ -66,12 +75,12 @@ func is_neighborhood(own: SvgCostumes, target:SvgCostumes)->bool:
 	# 相手のTexture_idx
 	var target_texture_idx = target._texture_idx
 	# 自身のsvgObj
-	var svg_key:String = own._svg_img_keys.get(texture_idx)
-	var svg_obj:SvgObj = own._svg_img_map.get(svg_key)
+	var svg_key:String = own_svg_img_keys.get(texture_idx)
+	var svg_obj:SvgObj = own_svg_img_map.get(svg_key)
 	svg_obj.distance = own.calculate_distance(svg_obj)
 	# 相手のsvgObj
-	var target_svg_key:String = target._svg_img_keys.get(target_texture_idx)
-	var target_svg_obj:SvgObj = target._svg_img_map.get(target_svg_key)
+	var target_svg_key:String = target_svg_img_keys.get(target_texture_idx)
+	var target_svg_obj:SvgObj = target_svg_img_map.get(target_svg_key)
 	target_svg_obj.distance = target.calculate_distance(target_svg_obj)
 	
 	# 近傍最大距離( global )
@@ -92,3 +101,12 @@ func is_neighborhood(own: SvgCostumes, target:SvgCostumes)->bool:
 	else:
 		# 近傍にある
 		return true
+		
+func clone(own:Sprite2DExt) -> Sprite2DExt:
+	
+	var _clone = own.duplicate()
+	_clone._original_sprite = own
+	_clone._cloned = true
+	_clone.z_index = own.z_index - 1 # 本体の後ろに表示
+
+	return _clone

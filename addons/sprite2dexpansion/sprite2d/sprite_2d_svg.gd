@@ -10,3 +10,5 @@ class_name Sprite2DSvg
 @onready var prev_scale: Vector2 = self.scale
 
 @onready var costumes:SvgCostumes = SvgCostumes.new(self)
+
+var _cloned: bool = false

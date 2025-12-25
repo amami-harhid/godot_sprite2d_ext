@@ -8,7 +8,6 @@ extends Sprite2DExt
 signal ballWaitNextProcess()
 
 var myself:Sprite2DExt
-var original = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -16,11 +15,15 @@ func _ready() -> void:
 	self.costumes.svg_file_path_setting([
 		"res://assets/ball-a.svg"
 	])
-	if original:
+	if _cloned == false: 
+		_original_sprite = self
 		position.x = get_viewport_rect().size.x / 10
 		position.y = get_viewport_rect().size.y - 10
+		
+	#print("_original_sprite=",_original_sprite)
 	costumes.current_svg_tex()
-	if original:
+	
+	if _cloned == false:
 		_loop_clone()
 		visible = false
 	else:
@@ -28,45 +31,43 @@ func _ready() -> void:
 		_loop_hit()
 
 func _process(delta: float)->void:
-	if original:
-		ballWaitNextProcess.emit()
+	#if _cloned == false:
+	ballWaitNextProcess.emit()
 
 func _loop_clone() ->void:
 	for idx in range(10):
 			
 		var limit = 20
 		var count = 0
-		while original:
+		while _cloned == false:
 			if count > limit:
 				break
 			_clone(count)
 			count += 1
-		await ThreadUtils.sleep(3)
+		await ThreadUtils.sleep(2)
 		await ballWaitNextProcess
 
 func _clone(count:int) ->void:
-	var clone:Sprite2DExt = self.duplicate()
-	clone.original = false
+	var clone:Sprite2DExt = SpriteUtils.clone(self)
 	clone.visible = true
 	clone.position.x += 25 * count
-	clone.myself = self
 	# 同じ階層に追加する
-	add_sibling.call_deferred(clone)
+	TOP.add_sibling.call_deferred(clone)
 
 func _loop_shoot()->void:
-	while !original:
+	while _cloned:
 		self.position.y -= 10
-		await myself.ballWaitNextProcess
+		await ballWaitNextProcess
 
 func _loop_hit()->void:
 	var target :Sprite2DExt = $"/root/Scene02/Cat"
-	while !original:
+	while _cloned:
 		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit :
 			break
 		if position.y < 0:
 			break
-		await myself.ballWaitNextProcess
+		await ballWaitNextProcess
 
 	visible = false
 	await ThreadUtils.sleep(1)	

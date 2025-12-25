@@ -7,6 +7,8 @@ signal signal_just_release_mouse_left()
 # drag可否
 @export var draggable:bool = false
 
+var _original_sprite: Sprite2DExt
+
 const VECTOR2_INF = Vector2(INF,INF) 
 var _mouse_dis:Vector2 = VECTOR2_INF
 func _preset_dragging() -> void :

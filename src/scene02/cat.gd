@@ -6,6 +6,8 @@ extends Sprite2DExt
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
+	print("Cat _ready")
+	_original_sprite = self
 	self.costumes.svg_file_path_setting([
 		"res://assets/cat-a.svg",
 		"res://assets/cat-b.svg",

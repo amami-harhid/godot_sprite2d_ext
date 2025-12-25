@@ -13,6 +13,10 @@ func _init(sprite: Sprite2DExt):
 	self.sprite = sprite
 
 func svg_file_path_setting(svg_path_arr: Array) -> void:
+	if self.sprite._cloned == true :
+		# クローンされたときは何もしない
+		return
+		
 	var _regex := RegEx.new()
 	var _error = _regex.compile("^.+/(.+)\\.svg$")
 	# スプライトテキスチャーの型をImageTextureにする
@@ -49,10 +53,13 @@ func calculate_distance(svg_obj: SvgObj) -> float :
 	return _fartherst
 	
 func current_svg_tex() -> void:
+	#print(self.sprite._original_sprite)
 	self._draw_svg()
 
 func next_svg_tex() -> void:
-	if self._svg_img_keys.size() == 1:
+	if self.sprite._original_sprite == null:
+		return
+	if self.sprite._original_sprite.costumes._svg_img_keys.size() == 1:
 		return
 	_texture_idx += 1
 	self._draw_svg()
@@ -60,18 +67,21 @@ func next_svg_tex() -> void:
 func prev_svg_tex() -> void:
 	_texture_idx -= 1
 	if _texture_idx < 0:
-		_texture_idx = self._svg_img_keys.size() -1
+		_texture_idx = self.sprite._original_sprite.costumes._svg_img_keys.size() -1
 	self._draw_svg()
 	
 func _draw_svg() -> void:
-	
+	if self.sprite._original_sprite == null:
+		return
+	var svg_img_keys = self.sprite._original_sprite.costumes._svg_img_keys
+	var svg_img_map = self.sprite._original_sprite.costumes._svg_img_map
 	if _texture_idx < 0:
 		return
-	if self._svg_img_keys.size() > 0:
-		var tex_size = self._svg_img_keys.size()
+	if svg_img_keys.size() > 0:
+		var tex_size = svg_img_keys.size()
 		_texture_idx = _texture_idx % tex_size
-		var key = self._svg_img_keys.get(_texture_idx)
-		var svg_obj:SvgObj = self._svg_img_map.get(key)
+		var key = svg_img_keys.get(_texture_idx)
+		var svg_obj:SvgObj = svg_img_map.get(key)
 		svg_obj.svg_scale = self.sprite.svg_scale
 		var image:Image = svg_obj.get_image()
 		# ImageTextureへのset_image は事前に済ませておく。
