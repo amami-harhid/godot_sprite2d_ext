@@ -11,8 +11,6 @@ func _ready() -> void:
 	costumes.svg_file_path_setting([
 		"res://assets/hen-a.svg",
 		"res://assets/hen-b.svg",
-		#"res://assets/hen-b.svg",
-		#"res://assets/hen-b.svg",
 	])
 	costumes.current_svg_tex()
 	self._loop01()
