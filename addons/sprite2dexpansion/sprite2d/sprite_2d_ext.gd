@@ -71,3 +71,14 @@ func _physics_process(delta: float) -> void:
 			#print("scale change distance = ", svg_obj.distance)
 		prev_scale = self.scale
 			
+func get_svg_img_keys() -> Array:
+	if self._cloned :
+		return self._original_sprite.costumes._svg_img_keys
+	else:
+		return self.costumes._svg_img_keys
+		
+func get_svg_img_map() -> Dictionary:
+	if self._cloned:
+		return self._original_sprite.costumes._svg_img_map
+	else:
+		return self.costumes._svg_img_map

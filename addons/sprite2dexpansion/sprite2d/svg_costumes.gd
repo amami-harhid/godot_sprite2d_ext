@@ -3,8 +3,8 @@ class_name SvgCostumes
 var sprite: Sprite2DExt
 var neighborhood_value: int = 10
 # SVG 関連
-var _svg_img_map = {}
-var _svg_img_keys = []
+var _svg_img_map = Dictionary()
+var _svg_img_keys = Array()
 # テキスチャの位置
 var _texture_idx = 0
 #var image: Image
