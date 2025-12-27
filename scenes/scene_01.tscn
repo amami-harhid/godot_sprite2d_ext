@@ -15,7 +15,6 @@ script = ExtResource("2_mxulj")
 draggable = true
 
 [node name="Niwatori" type="Sprite2D" parent="."]
-rotation = 0.5794493
 script = ExtResource("3_wtt3i")
 svg_scale = 2.0
 
@@ -24,7 +23,7 @@ offset_left = 50.0
 offset_top = 50.0
 offset_right = 1116.0
 offset_bottom = 732.0
-text = "ニワトリは 1秒ごと、カニは0.5秒ごとに、コスチュームを切り替えています"
+scale = Vector2(2, 2)
 
 [node name="Circle" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.9647059)

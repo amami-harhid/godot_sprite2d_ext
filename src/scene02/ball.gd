@@ -5,9 +5,12 @@ extends Sprite2DExt
 
 @onready var TOP = $"/root/Scene02"
 
-signal ballWaitNextProcess()
+#signal waitNextFrame()
+#signal s_loop_shoot()
+#signal s_loop_hit()
 
-var myself:Sprite2DExt
+var signalArr = []
+var target :Sprite2DExt
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -16,8 +19,7 @@ func _ready() -> void:
 		"res://assets/ball-a.svg"
 	])
 	if _cloned == false: 
-		_original_sprite = self
-		position.x = get_viewport_rect().size.x / 10
+		position.x = get_viewport_rect().size.x / 4
 		position.y = get_viewport_rect().size.y - 10
 		
 	#print("_original_sprite=",_original_sprite)
@@ -27,48 +29,104 @@ func _ready() -> void:
 		_loop_clone()
 		visible = false
 	else:
+		target = $"/root/Scene02/Cat"
+		_freeSignal.connect(_free)
 		_loop_shoot()
 		_loop_hit()
 
-func _process(delta: float)->void:
-	#if _cloned == false:
-	ballWaitNextProcess.emit()
 
+
+#func _physics_process(delta: float) -> void:
+	
+	#waitNextFrame.emit()
+	#s_loop_shoot.emit()
+	#s_loop_hit.emit()
+	
+	#if _cloned:
+	#	self.translate(Vector2(0, -10))
+	#	if target :
+	#		var hitter:Hit = costumes._is_pixel_touched(target)
+	#		if hitter.hit :
+	#			_freeSignal.emit(self)
+	#		if position.y < 0:
+	#			_freeSignal.emit(self)
+		
 func _loop_clone() ->void:
-	for idx in range(10):
+	for idx in range(20):
 			
-		var limit = 20
+		var limit = 10
 		var count = 0
 		while _cloned == false:
+			count += 1
 			if count > limit:
 				break
 			_clone(count)
-			count += 1
+			#await frame_changed
+			#await waitNextFrame
+
+			#await ThreadUtils.waitNextFrame
 		await ThreadUtils.sleep(2)
-		await ballWaitNextProcess
+		#await frame_changed
+		await ThreadUtils.waitNextFrame
+		#await waitNextFrame
 
 func _clone(count:int) ->void:
 	var clone:Sprite2DExt = SpriteUtils.clone(self)
 	clone.visible = true
-	clone.position.x += 25 * count
+	clone.position.x += 40 * (count-1)
 	# 同じ階層に追加する
 	TOP.add_sibling.call_deferred(clone)
 
+var _move_direction = 1
 func _loop_shoot()->void:
 	while _cloned:
-		self.position.y -= 10
-		await ballWaitNextProcess
-
+		self.position += Vector2(0, -10) + _move_direction * Vector2(1, 5)
+		#await frame_changed
+		await ThreadUtils.waitNextFrame
+		#await waitNextFrame
+		#await s_loop_shoot
+		#await ThreadUtils.sleep(1/30)
+var hitter:Hit = Hit.new()
 func _loop_hit()->void:
-	var target :Sprite2DExt = $"/root/Scene02/Cat"
+	#_freeSignal.connect(_free)
+	#var target :Sprite2DExt = $"/root/Scene02/Cat"
 	while _cloned:
+		#var time_start = ThreadUtils.get_time()
 		var hitter:Hit = costumes._is_pixel_touched(target)
+		#costumes._is_pixel_touched2.call_deferred(target)
+		#var time_now = ThreadUtils.get_time()
+		#print("time=", int(time_now-time_start), "   ,", time_now, ",", time_start)
 		if hitter.hit :
-			break
+			#print("time=", int(time_now-time_start), "   ,", time_now, ",", time_start)
+			_move_direction *= -5
+			await ThreadUtils.waitNextFrame
+			continue
 		if position.y < 0:
 			break
-		await ballWaitNextProcess
+		if position.y > get_viewport_rect().size.y:
+			break
+		#await frame_changed
+		await ThreadUtils.waitNextFrame
+		#await waitNextFrame
+		#await s_loop_hit
+		#await ThreadUtils.sleep(1/30)
 
 	visible = false
-	await ThreadUtils.sleep(1)	
-	queue_free()
+	_freeSignal.emit(self)
+	#var thread = Thread.new()
+	#thread.start(_free, Thread.PRIORITY_NORMAL)
+	#await ThreadUtils.sleep(1)	
+	#await ThreadUtils.waitNextFrame
+	#TOP.remove_child.call_deferred(self)
+	
+	#self.free.call_deferred()
+	#self.queue_free.call_deferred()
+
+signal _freeSignal()
+func _free( node ):
+	#var node = self
+	#print(node.name)
+	node.free.call_deferred()
+	node.queue_free.call_deferred()
+	
+	

@@ -4,8 +4,8 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	_loop_next_scene()
-
+	pass
+	
 const TIME: float = 1.0/30   # FPS = 30
 
 var timer = 0
@@ -16,9 +16,3 @@ func _process(delta: float) -> void:
 		timer -= TIME
 		ThreadUtils.waitNextFrame.emit()
 		
-func _loop_next_scene()->void:
-	await ThreadUtils.sleep(1)
-	visible = true
-	await ThreadUtils.sleep(5)
-	visible = false
-	ScenesManager.load_scene02()

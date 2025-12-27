@@ -3,6 +3,10 @@ class_name Sprite2DExt
 
 signal signal_just_pressed_mouse_left()
 signal signal_just_release_mouse_left()
+signal waitNextProcess()
+
+func getWaitNextProcess() :
+	return _original_sprite.waitNextProcess
 
 # drag可否
 @export var draggable:bool = false
@@ -43,10 +47,14 @@ func _drag_process() -> void:
 func _ready() -> void:
 	if self.draggable:
 		_preset_dragging()
-
+	
+	#print("self._cloned=", self._cloned)
+	if self._cloned == false: 
+		self._original_sprite = self
+	#print("self._original_sprite=", self._original_sprite)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	# ドラッグ対応
 	if self.draggable:
 		# fire input signals
@@ -62,3 +70,4 @@ func _process(delta: float) -> void:
 			svg_obj.distance = self.costumes.calculate_distance(svg_obj)
 			#print("scale change distance = ", svg_obj.distance)
 		prev_scale = self.scale
+			

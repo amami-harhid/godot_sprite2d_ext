@@ -7,7 +7,7 @@ var _svg_img_map = {}
 var _svg_img_keys = []
 # テキスチャの位置
 var _texture_idx = 0
-var image: Image
+#var image: Image
 	
 func _init(sprite: Sprite2DExt):
 	self.sprite = sprite
@@ -40,6 +40,7 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				# 不透明なピクセル座標（Local)を配列化
 				var _img = svg_obj.get_image()
 				svg_obj.surrounding_point_arr = BitmapUtils.surrounding_points(_img, self.sprite.pixel_spacing)
+				#print("svg_obj.surrounding_point_arr size=", svg_obj.surrounding_point_arr.size())
 		else:
 			print("ivalid path = ", path)
 
@@ -94,5 +95,6 @@ enum CALLER  {OWN, RECALL}
 # スプライト自身の表示サイズが大のときの高速化を図りたい
 func _is_pixel_touched(_target:Sprite2DExt, caller:CALLER = CALLER.OWN) -> Hit :
 	#var circle :Sprite2D = $"/root/Node2D/Circle"
-	var hit = SpriteUtils.is_touched(self, _target.costumes)
+	var hit = SpriteUtils.is_touched(self.sprite, _target)
 	return hit
+	

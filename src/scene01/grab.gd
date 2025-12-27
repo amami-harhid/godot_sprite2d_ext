@@ -19,6 +19,7 @@ func _ready() -> void:
 	_loop02()
 	_loop03()
 	_loop04()
+	_loop05()
 
 func _loop01() -> void :
 	while true:
@@ -40,23 +41,25 @@ func _loop02() -> void:
 	#circle.modulate = Color(0, 0, 1) # 青くする
 	#circle.position = Vector2(0,0)
 	var target:Sprite2DExt = $"/root/Scene01/Niwatori"
+	print("target._original_sprite=", target._original_sprite)
 	while true:
-		# 1秒ごと（Niwatoriのコスチューム切り替えのタイミングで、falseになる. なぜかな？
 		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit == true:
-			#circle.position = hitter.position 
 			self.modulate = Color(0.1, 0.1, 1, 0.5) # 青くする
-			circle.position = hitter.position
+			circle.position = self.to_global(hitter.position) 
 			circle.visible = true
-			label.text = "Hit!"
+			label.text = "Hit!(当たっている)"
+			_rotationer = true
 		elif hitter.position.x == INF:
 			self.modulate = Color(1, 1, 1, 1)
 			label.text = ""
 			circle.visible = false
+			_rotationer = false
 		else:
-			label.text = "Neighborhood!"
+			label.text = "Neighborhood!(近傍)"
 			self.modulate = Color(1, 1, 1, 1)
 			circle.visible = false
+			_rotationer = false
 			
 		
 		await ThreadUtils.waitNextFrame
@@ -70,5 +73,12 @@ func _loop03() -> void:
 func _loop04() -> void :
 	while true:
 		await ThreadUtils.sleep(0.5)
-		costumes.next_svg_tex()
+		self.costumes.next_svg_tex()
+		await ThreadUtils.waitNextFrame
+
+var _rotationer: bool = false
+func _loop05() -> void :
+	while true:
+		if _rotationer:
+			self.rotation -= PI / 180 * 15
 		await ThreadUtils.waitNextFrame

@@ -1,0 +1,23 @@
+[gd_scene load_steps=6 format=3 uid="uid://di8hqhl435sdv"]
+
+[ext_resource type="Script" uid="uid://to2cwipnfspi" path="res://src/scene03/scene_03.gd" id="1_tjfg8"]
+[ext_resource type="Script" uid="uid://c8s2j513qkb01" path="res://src/scene03/cat.gd" id="2_nhmps"]
+[ext_resource type="Script" uid="uid://b4d4jfdcyo31r" path="res://src/scene03/collision.gd" id="3_lkbgj"]
+[ext_resource type="Script" uid="uid://dffbfwsqft5kk" path="res://src/scene03/ball.gd" id="3_ydii0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ydii0"]
+
+[node name="Scene03" type="Node2D"]
+script = ExtResource("1_tjfg8")
+
+[node name="Cat" type="Sprite2D" parent="."]
+script = ExtResource("2_nhmps")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="Ball" type="Sprite2D" parent="Area2D"]
+script = ExtResource("3_ydii0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_ydii0")
+script = ExtResource("3_lkbgj")

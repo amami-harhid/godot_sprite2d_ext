@@ -11,6 +11,8 @@ script = ExtResource("1_cd7om")
 script = ExtResource("1_lj1yu")
 draggable = true
 svg_scale = 3.0
+pixel_spacing = 10
 
 [node name="Ball" type="Sprite2D" parent="."]
 script = ExtResource("3_48bg7")
+pixel_spacing = 10

@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1cwa8nlgu7cf"]
+
+[ext_resource type="Script" uid="uid://eovvy60jwl3" path="res://src/scene02/scene_02.gd" id="1_cd7om"]
+[ext_resource type="Script" uid="uid://b4ns6ksdl2od" path="res://src/scene02/cat.gd" id="1_lj1yu"]
+[ext_resource type="Script" uid="uid://cxfo17ioh6ry4" path="res://src/scene02/ball.gd" id="3_48bg7"]
+
+[node name="Scene02" type="Node2D"]
+script = ExtResource("1_cd7om")
+
+[node name="Cat" type="Sprite2D" parent="."]
+script = ExtResource("1_lj1yu")
+draggable = true
+svg_scale = 3.0
+
+[node name="Ball" type="Sprite2D" parent="."]
+script = ExtResource("3_48bg7")
