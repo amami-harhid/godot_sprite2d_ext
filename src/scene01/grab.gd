@@ -21,6 +21,8 @@ func _ready() -> void:
 	_loop04()
 	_loop05()
 
+	_viewer_help()
+
 func _loop01() -> void :
 	while true:
 		#next_svg_tex()
@@ -41,7 +43,7 @@ func _loop02() -> void:
 	#circle.modulate = Color(0, 0, 1) # 青くする
 	#circle.position = Vector2(0,0)
 	var target:Sprite2DExt = $"/root/Scene01/Niwatori"
-	print("target._original_sprite=", target._original_sprite)
+	#print("target._original_sprite=", target._original_sprite)
 	while true:
 		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit == true:
@@ -82,3 +84,28 @@ func _loop05() -> void :
 		if _rotationer:
 			self.rotation -= PI / 180 * 15
 		await ThreadUtils.waitNextFrame
+
+# FOR DEBUG
+func _viewer_help() ->void:
+	var rect:Rect2 = self.get_rect()
+	var viewer:Sprite2D = $"../../Scene01/Viewer"	
+	var image:Image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
+	image.fill(Color(0,0,0,0))
+	
+	var _key = self.get_svg_img_keys().get(self.costumes._texture_idx)
+	var _svgObj:SvgObj = self.get_svg_img_map().get(_key)
+	var _surrounds = _svgObj.surrounding_point_arr
+	for _pos:Vector2 in _svgObj.surrounding_point_arr:
+		image.set_pixel(int(_pos.x), int(_pos.y), Color(0,0,0,1))
+	var _texture:ImageTexture = ImageTexture.new()
+	_texture.set_image(image)
+	viewer.texture = _texture
+
+
+func _on_viewer_tree_entered() -> void:
+	while true:
+		if self.costumes:
+			_viewer_help()
+			break
+		await ThreadUtils.waitNextFrame
+	pass # Replace with function body.

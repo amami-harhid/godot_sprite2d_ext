@@ -54,7 +54,7 @@ func _ready() -> void:
 func _loop_clone() ->void:
 	for idx in range(20):
 			
-		var limit = 10
+		var limit = 9
 		var count = 0
 		while _cloned == false:
 			count += 1
@@ -73,7 +73,7 @@ func _loop_clone() ->void:
 func _clone(count:int) ->void:
 	var clone:Sprite2DExt = SpriteUtils.clone(self)
 	clone.visible = true
-	clone.position.x += 40 * (count-1)
+	clone.position.x += 40 * (count)
 	# 同じ階層に追加する
 	TOP.add_sibling.call_deferred(clone)
 
