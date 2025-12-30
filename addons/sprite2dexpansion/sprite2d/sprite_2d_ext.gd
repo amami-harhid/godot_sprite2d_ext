@@ -1,17 +1,20 @@
 extends Sprite2DSvg
 class_name Sprite2DExt
 
-signal signal_just_pressed_mouse_left()
-signal signal_just_release_mouse_left()
-signal waitNextProcess()
+#signal waitNextProcess()
 
-func getWaitNextProcess() :
-	return _original_sprite.waitNextProcess
+#func getWaitNextProcess() :
+#	return _original_sprite.waitNextProcess
 
 # drag可否
 @export var draggable:bool = false
 
+# original sprite when cloned
 var _original_sprite: Sprite2DExt
+
+# signal for dragging
+signal signal_just_pressed_mouse_left()
+signal signal_just_release_mouse_left()
 
 const VECTOR2_INF = Vector2(INF,INF) 
 var _mouse_dis:Vector2 = VECTOR2_INF
@@ -63,22 +66,10 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_released("mouse_left"):
 			signal_just_release_mouse_left.emit()
 			
-	# scale変更されたとき「衝突判定近傍距離」変化するため再計算する
-	if prev_scale != self.scale:
-		for key:String in self._svg_img_keys:
-			var svg_obj:SvgObj = self._svg_img_map.get(key)
-			svg_obj.distance = self.costumes.calculate_distance(svg_obj)
-			#print("scale change distance = ", svg_obj.distance)
-		prev_scale = self.scale
-			
-func get_svg_img_keys() -> Array:
-	if self._cloned :
-		return self._original_sprite.costumes._svg_img_keys
-	else:
-		return self.costumes._svg_img_keys
-		
-func get_svg_img_map() -> Dictionary:
-	if self._cloned:
-		return self._original_sprite.costumes._svg_img_map
-	else:
-		return self.costumes._svg_img_map
+#	# scale変更されたとき「衝突判定近傍距離」変化するため再計算する
+#	if prev_scale != self.scale:
+#		for key:String in self._svg_img_keys:
+#			var svg_obj:SvgObj = self._svg_img_map.get(key)
+#			svg_obj.distance = self.costumes.calculate_distance(svg_obj)
+#			#print("scale change distance = ", svg_obj.distance)
+#		prev_scale = self.scale

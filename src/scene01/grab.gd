@@ -86,14 +86,14 @@ func _loop05() -> void :
 		await ThreadUtils.waitNextFrame
 
 # FOR DEBUG
+# Viewerへ外周を描く
 func _viewer_help() ->void:
 	var rect:Rect2 = self.get_rect()
 	var viewer:Sprite2D = $"../../Scene01/Viewer"	
 	var image:Image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
 	image.fill(Color(0,0,0,0))
 	
-	var _key = self.get_svg_img_keys().get(self.costumes._texture_idx)
-	var _svgObj:SvgObj = self.get_svg_img_map().get(_key)
+	var _svgObj:SvgObj = self.costumes._get_svg_img_obj()
 	var _surrounds = _svgObj.surrounding_point_arr
 	for _pos:Vector2 in _svgObj.surrounding_point_arr:
 		image.set_pixel(int(_pos.x), int(_pos.y), Color(0,0,0,1))
@@ -101,11 +101,12 @@ func _viewer_help() ->void:
 	_texture.set_image(image)
 	viewer.texture = _texture
 
-
+# For Debug
+# Viewerノードがツリーに入り、Readyが終わったときに
+# _viewer_help() を１回だけ実行する
 func _on_viewer_tree_entered() -> void:
 	while true:
 		if self.costumes:
 			_viewer_help()
 			break
 		await ThreadUtils.waitNextFrame
-	pass # Replace with function body.

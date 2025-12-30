@@ -54,18 +54,3 @@ func surrounding_points(_image: Image, skip_count: int) -> Array:
 			_surroundings.append(_opaque_arr.get(idx))
 		
 	return _surroundings
-	
-func pixel_to_global(_sprite: Sprite2D, _pixels: Array) -> Array:
-	var _arr = []
-	for pos in _pixels:
-		_arr.append( _sprite.to_global( pos ))
-	return _arr
-	
-# 中心からもっとも遠い点
-func point_fartherst_from_center(_global_center:Vector2, _pixel_arr: Array) -> float :
-	var _max:float = -INF
-	for pos:Vector2 in _pixel_arr :
-		var d = _global_center.distance_to(pos)
-		if _max < d :
-			_max = d
-	return _max

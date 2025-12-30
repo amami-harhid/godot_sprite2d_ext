@@ -8,9 +8,11 @@ var svg_scale_created : float = 1.0
 #var image: Image = Image.new()
 var texture: ImageTexture = ImageTexture.new()
 var surrounding_point_arr = [] # 不透明部分の外周ピクセル配列
-var distance:float = -INF
-enum Axis { X, Y }
 
+var empty:bool = false
+func _init(_empty:bool = false) :
+	self.empty = _empty
+	
 func get_image()->Image:
 	if self.svg_scale != self.svg_scale_created:
 		self.create_svg_from_text()

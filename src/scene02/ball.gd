@@ -34,23 +34,6 @@ func _ready() -> void:
 		_loop_shoot()
 		_loop_hit()
 
-
-
-#func _physics_process(delta: float) -> void:
-	
-	#waitNextFrame.emit()
-	#s_loop_shoot.emit()
-	#s_loop_hit.emit()
-	
-	#if _cloned:
-	#	self.translate(Vector2(0, -10))
-	#	if target :
-	#		var hitter:Hit = costumes._is_pixel_touched(target)
-	#		if hitter.hit :
-	#			_freeSignal.emit(self)
-	#		if position.y < 0:
-	#			_freeSignal.emit(self)
-		
 func _loop_clone() ->void:
 	for idx in range(20):
 			

@@ -5,35 +5,31 @@ enum CALLER  {OWN, RECALL}
 # 衝突している
 func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OWN)->Hit:
 	var hitter:Hit = Hit.new()	
-	if target == null or target._original_sprite == null:
-		print("target or target._original_sprite is null")
+	
+	# 相手ノードの準備ができているか？( ready 完了しているか？）
+	if target == null or target.costumes == null :
 		hitter.hit = false
 		return hitter
 
-	var own_svg_img_keys = own.get_svg_img_keys()
-	var own_svg_img_map = own.get_svg_img_map()
-	var target_svg_img_keys = target.get_svg_img_keys()
-	var target_svg_img_map = target.get_svg_img_map()	
+	# SVG OBJ を用意する
+	var svg_obj:SvgObj = own.costumes._get_svg_img_obj()
+	var target_svg_obj:SvgObj = target.costumes._get_svg_img_obj()
+	if svg_obj.empty or target_svg_obj.empty:
+		# SVG OBJ が空（異常時）
+		#print("svg obj is not ready")
+		hitter.hit = false
+		return hitter
 
 	var rect:Rect2 = own.get_rect()
-	
 	var target_rect_in_own:Rect2 = get_rect2_from_target(own, target)
-	
 	var _intersect:Rect2 = rect.intersection(target_rect_in_own)
 	if !_intersect.has_area(): # 大きさをもたない
 		# 近傍にないと判定する
 		hitter.hit = false
 		return hitter
 
-	# 以降は、近傍にあるときの衝突判定処理	
-	var svg_obj_key = own_svg_img_keys[own.costumes._texture_idx]
-	var svg_obj:SvgObj = own_svg_img_map.get(svg_obj_key)
-	
-	var target_svg_obj_key = target_svg_img_keys[target.costumes._texture_idx]
-	var target_svg_obj: SvgObj = target_svg_img_map.get(target_svg_obj_key)
 
-	#--- Not Used
-	#var target_image: Image = target_svg_obj.get_image()
+	# 以降は、近傍にあるときの衝突判定処理	
 
 	# 相互の矩形が重なるところの外周座標のみを抽出する
 	var _surrounding_point_arr = []

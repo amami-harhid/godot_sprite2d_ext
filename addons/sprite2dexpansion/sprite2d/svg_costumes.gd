@@ -7,7 +7,6 @@ var _svg_img_map = Dictionary()
 var _svg_img_keys = Array()
 # テキスチャの位置
 var _texture_idx = 0
-#var image: Image
 	
 func _init(sprite: Sprite2DExt):
 	self.sprite = sprite
@@ -40,23 +39,15 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				# 不透明なピクセル座標（Local)を配列化
 				var _img = svg_obj.get_image()
 				svg_obj.surrounding_point_arr = BitmapUtils.surrounding_points(_img, self.sprite.pixel_spacing)
-				#print("svg_obj.surrounding_point_arr size=", svg_obj.surrounding_point_arr.size())
 		else:
 			print("ivalid path = ", path)
-
-# 画像矩形をグローバル座標に変換し、矩形の中に描かれるイメージ外周点のうちから
-# 中心より最も遠い点を求める
-func calculate_distance(svg_obj: SvgObj) -> float :
-	var _rect = svg_obj.rect
-	var _global_center:Vector2 = self.sprite.to_global( Vector2( _rect.size.x/2, _rect.size.y/2 ))
-	var _pixels = BitmapUtils.pixel_to_global(self.sprite, svg_obj.surrounding_point_arr)
-	var _fartherst = BitmapUtils.point_fartherst_from_center(_global_center, _pixels)
-	return _fartherst
 	
+# 現在のテキスチャーで描画
 func current_svg_tex() -> void:
 	#print(self.sprite._original_sprite)
 	self._draw_svg()
 
+# 次のテキスチャーで描画
 func next_svg_tex() -> void:
 	if self.sprite._original_sprite == null:
 		return
@@ -65,17 +56,19 @@ func next_svg_tex() -> void:
 	_texture_idx += 1
 	self._draw_svg()
 
+# 前のテキスチャーで描画
 func prev_svg_tex() -> void:
 	_texture_idx -= 1
 	if _texture_idx < 0:
 		_texture_idx = self.sprite._original_sprite.costumes._svg_img_keys.size() -1
 	self._draw_svg()
-	
+
+# 描画
 func _draw_svg() -> void:
 	if self.sprite._original_sprite == null:
 		return
-	var svg_img_keys = self.sprite._original_sprite.costumes._svg_img_keys
-	var svg_img_map = self.sprite._original_sprite.costumes._svg_img_map
+	var svg_img_keys = self._get_svg_img_keys()
+	var svg_img_map = self._get_svg_img_map()
 	if _texture_idx < 0:
 		return
 	if svg_img_keys.size() > 0:
@@ -90,10 +83,35 @@ func _draw_svg() -> void:
 		self.sprite.texture = _texture
 		svg_obj.rect = self.sprite.get_rect()
 
-enum CALLER  {OWN, RECALL}
+func _get_svg_img_obj() -> SvgObj:
+	var _tex_idx = self._texture_idx
+	if _tex_idx < 0:
+		return SvgObj.new(true) # 空のオブジェクト
+		
+	var _svg_img_keys = _get_svg_img_keys()
+	if _tex_idx < _svg_img_keys.size():
+		var _tex_key = _svg_img_keys.get(_tex_idx)
+		var _svg_img_map = _get_svg_img_map()
+		if _svg_img_map.has(_tex_key):
+			var _svg_obj:SvgObj = _svg_img_map.get(_tex_key)
+			return _svg_obj
+	return SvgObj.new(true) # 空のオブジェクト
+
+func _get_svg_img_keys() -> Array:
+	if self.sprite._cloned == true :
+		return self.sprite._original_sprite.costumes._svg_img_keys
+	else:
+		return self._svg_img_keys	
+
+func _get_svg_img_map()-> Dictionary:
+	if self.sprite._cloned == true:
+		return self.sprite._original_sprite.costumes._svg_img_map
+	else:
+		return self._svg_img_map
+
 # 画像ピクセルで判定する衝突判定
 # スプライト自身の表示サイズが大のときの高速化を図りたい
-func _is_pixel_touched(_target:Sprite2DExt, caller:CALLER = CALLER.OWN) -> Hit :
+func _is_pixel_touched(_target:Sprite2DExt) -> Hit :
 	#var circle :Sprite2D = $"/root/Node2D/Circle"
 	var hit = SpriteUtils.is_touched(self.sprite, _target)
 	return hit
