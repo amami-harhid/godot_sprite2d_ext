@@ -39,7 +39,7 @@ Scratch3風に 「次のコスチューム」みたいなメソッドを用意�
 指定した秒数分、処理を止めるメソッドを用意しました。
 
 ```:gdscript
-    await self.sleep(1)       # 1秒待つ
+    await ThreadUtils.sleep(1)       # 1秒待つ
 ```
 
 ## ずっとブロック風の表現に挑戦
@@ -49,9 +49,9 @@ Scratch3風に 「次のコスチューム」みたいなメソッドを用意�
 ```:gdscript
 func _loop() -> void:
     while true:
-        await self.sleep(0.5)       # 0.5秒待つ
-        self.next_svg_tex()         # 次のコスチュームにする
-        await signal_process_loop   # Processループタイミングに合わせる
+        await ThreadUtils.sleep(0.5)    # 0.5秒待つ
+        self.next_svg_tex()             # 次のコスチュームにする
+        await ThreadUtils.waitNextFrame # Processループタイミングを合わせる
 ```
 
 ## bitmap collision
@@ -59,13 +59,14 @@ func _loop() -> void:
 
 ```:gdscript
 func _loop() -> void:
-	var target:Sprite2DExt = $"/root/Node2D/Niwatori" # ニワトリのノード
+	var target:Sprite2DExt = $"/root/Scene01/Niwatori" # ニワトリのノード
 	while true:
-		if self._is_pixel_touched(target) :         # 相手に触ったかの判定
-			self.modulate = Color(0.5, 0.5, 0.5)    # やや暗くする
-		else:
-			self.modulate = Color(1, 1, 1)          # 元の色に変える
-		await signal_process_loop                   # Processループタイミングに合わせる
+		var hit:Hit = self.costumes._is_pixel_touched(target)
+		if hit.hit :  # 相手に触ったとき
+			self.modulate = Color(0.5, 0.5, 0.5)  # やや暗くする
+		else:         # 触っていないとき
+			self.modulate = Color(1, 1, 1)        # 元の色に変える
+		await ThreadUtils.waitNextFrame           # Processループタイミングを合わせる
 ```
 
 ### TODO
