@@ -50,7 +50,7 @@ Scratch3風に 「次のコスチューム」みたいなメソッドを用意�
 func _loop() -> void:
     while true:
         await ThreadUtils.sleep(0.5)    # 0.5秒待つ
-        self.next_svg_tex()             # 次のコスチュームにする
+        self.costumes.next_svg_tex()    # 次のコスチュームにする
         await ThreadUtils.waitNextFrame # Processループタイミングを合わせる
 ```
 
