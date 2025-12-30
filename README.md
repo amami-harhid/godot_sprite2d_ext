@@ -47,6 +47,9 @@ Scratch3風に 「次のコスチューム」みたいなメソッドを用意�
 「ずっと繰り返す」を while を使って書いてみました。
 
 ```:gdscript
+func _ready() -> void:
+	_loop()  # 非同期処理(ずっと繰返し)を開始
+
 func _loop() -> void:
     while true:
         await ThreadUtils.sleep(0.5)    # 0.5秒待つ
@@ -58,6 +61,9 @@ func _loop() -> void:
 画素がある部分が当たることで衝突判定を行う仕組みを用意しました。
 
 ```:gdscript
+func _ready() -> void:
+	_loop()  # 非同期処理(ずっと繰返し)を開始
+
 func _loop() -> void:
 	var target:Sprite2DExt = $"/root/Scene01/Niwatori" # ニワトリのノード
 	while true:
