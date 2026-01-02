@@ -43,9 +43,10 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 	for pos in _surrounding_point_arr:
 		var _pos_g:Vector2 = own.to_global(pos)
 		var _pos_t_l:Vector2 = target.to_local(_pos_g)
-		# TODO 
-		# is_pixel_opaque　は非効率のようなので、
-		# ImageよりPixelを取り出して不透明判定をするようにしたい
+		# is_pixel_opaqueは、スプライトのScale,Rotationを考慮して
+		# 不透明判定をしてくれる。自前で画像(Image)から座標ピクセルを取り出して
+		# 不透明判定をする方法もあるが、Scale/Rotationの値どおりに画像を変換させる
+		# 必要があるので、is_pixel_opaque の方が使いやすい。
 		if target.is_pixel_opaque(_pos_t_l):
 			hitter.position = pos
 			hitter.hit = true
