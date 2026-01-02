@@ -23,6 +23,24 @@ Sprite2DExtである「カニ」「ニワトリ」を使用しています。
 
 サンプルは FPS=30 で動かしています。
 
+# 事前準備
+
+## プラグイン
+
+プロジェクト設定⇒プラグイン⇒Sprite2DExpansion　を有効にしてください
+addons/sprite2d : Sprite2dExtクラス
+
+
+## シングルトンクラス
+
+プロジェクト設定⇒グローバルにて次を有効にしてください。
+
+- ScenesManager  res://src/singleton/scenes_manager.gd
+- BitmapUtils  res://src/singleton/bitmap_utils.gd
+- SpriteUtils  res://src/singleton/sprite_utils.gd
+- ThreadUtils  res://src/singleton/thread_utils.gd
+
+
 # 注入したScratch3愛
 
 ## SVG画像をくっきりと表示

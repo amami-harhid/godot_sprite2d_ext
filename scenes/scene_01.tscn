@@ -14,7 +14,6 @@ z_index = 2
 y_sort_enabled = true
 script = ExtResource("2_mxulj")
 draggable = true
-pixel_spacing = 5
 
 [node name="Niwatori" type="Sprite2D" parent="."]
 script = ExtResource("3_wtt3i")

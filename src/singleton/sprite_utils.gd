@@ -30,17 +30,17 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 
 
 	# 以降は、近傍にあるときの衝突判定処理	
-
+	# 外周点の配列(svg_obj.surrounding_point_arr)は
+	# 中心点を基準点(0,0)としたときの座標である
 	# 相互の矩形が重なるところの外周座標のみを抽出する
 	var _surrounding_point_arr = []
 	for pos in svg_obj.surrounding_point_arr:
-		var _pos = Vector2(pos.x-rect.size.x/2, pos.y-rect.size.y/2)
-		if _intersect.has_point(_pos):
-			_surrounding_point_arr.append(_pos)
+		#var _pos = Vector2(pos.x-rect.size.x/2, pos.y-rect.size.y/2)
+		if _intersect.has_point(pos):
+			_surrounding_point_arr.append(pos)
 
 	# 絞り込んだ不透明の境界の点を使い、衝突判定をする
 	for pos in _surrounding_point_arr:
-		var _pos_2:Vector2 = pos + Vector2(rect.size.x/2, rect.size.y/2)
 		var _pos_g:Vector2 = own.to_global(pos)
 		var _pos_t_l:Vector2 = target.to_local(_pos_g)
 		# TODO 
