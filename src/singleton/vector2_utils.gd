@@ -29,27 +29,25 @@ func point_is_not_inside(point:Vector2, rect:Array[Vector2])->bool:
 # 指定した点が四角形の辺上、頂点にある場合、true
 func point_is_inside(point:Vector2, rect:Array[Vector2])->bool:
 	var size:int = rect.size()
-	if size < 3 :
+	if size != 4 : # 頂点は４個
 		return false
 	for idx in range(size):
 		var o:Vector2 = rect.get(idx)
-		# 1つ前の点
+		# 隣（前）の点
 		var idx_A:int = idx -1
 		if idx == 0 :
 			idx_A = size -1
 		var v_A:Vector2 = rect.get(idx_A)
-		# 1つ後の点
+		# 隣（後）の点
 		var idx_B = idx +1
 		if idx == size -1:
 			idx_B = 0
 		var v_B:Vector2 = rect.get(idx_B)
-		# 前後の点に向いたベクトル同士の内積
-		#var d0 = (v_A-o).normalized().dot((v_B-o).normalized())
-		# 前の点と指定点に向いたベクトル同士との内積
+		# 隣（前）の点と指定点に向いたベクトル同士との内積
 		var d1 = (v_A-o).dot((point-o))
+		# 隣（後）の点と指定点に向いたベクトル同士との内積
 		var d2 = (v_B-o).dot((point-o))
-		#print("idx_A=",idx_A,",idx=",idx,",idx_B=",idx_B)
-		#print("d0=",d0, ",d1=",d1, ",d2=",d2, "d1+d2=", d1+d2)
+		# 内積のどちらかがマイナスのとき 指定点は外にある
 		if d1 < 0 or d2 < 0:
 			return false
 	return true
