@@ -7,10 +7,12 @@ var _svg_img_map = Dictionary()
 var _svg_img_keys = Array()
 # テキスチャの位置
 var _texture_idx = 0
-	
+
+# コンストラクター	
 func _init(sprite: Sprite2DExt):
 	self.sprite = sprite
 
+# 画像ファイルを読み込む
 func svg_file_path_setting(svg_path_arr: Array) -> void:
 	if self.sprite._cloned == true :
 		# クローンされたときは何もしない
@@ -49,10 +51,17 @@ func current_svg_tex() -> void:
 
 # 次のテキスチャーで描画
 func next_svg_tex() -> void:
-	if self.sprite._original_sprite == null:
-		return
-	if self.sprite._original_sprite.costumes._svg_img_keys.size() == 1:
-		return
+	if self.sprite._cloned:
+		if self.sprite._original_sprite == null:
+			return
+		if self.sprite._original_sprite.costumes._svg_img_keys.size() == 1:
+			return
+	else:
+		if self.sprite == null:
+			return
+		if self.sprite.costumes._svg_img_keys.size() == 1:
+			return
+
 	_texture_idx += 1
 	self._draw_svg()
 
@@ -60,12 +69,16 @@ func next_svg_tex() -> void:
 func prev_svg_tex() -> void:
 	_texture_idx -= 1
 	if _texture_idx < 0:
-		_texture_idx = self.sprite._original_sprite.costumes._svg_img_keys.size() -1
+		if self.sprite._cloned:
+			_texture_idx = self.sprite._original_sprite.costumes._svg_img_keys.size() -1
+		else:
+			_texture_idx = self.sprite.costumes._svg_img_keys.size() -1
+			
 	self._draw_svg()
 
 # 描画
 func _draw_svg() -> void:
-	if self.sprite._original_sprite == null:
+	if self.sprite._cloned and self.sprite._original_sprite == null:
 		return
 	var svg_img_keys = self._get_svg_img_keys()
 	var svg_img_map = self._get_svg_img_map()
@@ -115,4 +128,3 @@ func _is_pixel_touched(_target:Sprite2DExt) -> Hit :
 	#var circle :Sprite2D = $"/root/Node2D/Circle"
 	var hit = SpriteUtils.is_touched(self.sprite, _target)
 	return hit
-	

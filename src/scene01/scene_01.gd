@@ -1,18 +1,4 @@
 extends Node2D
-
-#signal signal_process_loop()
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass
 	
-const TIME: float = 1.0/30   # FPS = 30
-
-var timer = 0
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	timer += delta
-	if timer > TIME:
-		timer -= TIME
-		ThreadUtils.waitNextFrame.emit()
-		
+func _physics_process(delta: float) -> void:
+	ThreadUtils.waitNextFrame.emit(delta)  # 引数は意味なし

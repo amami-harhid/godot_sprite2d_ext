@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Sprite2DExt_Prototype"
-run/main_scene="uid://b1cwa8nlgu7cf"
+run/main_scene="uid://crn0kv5hj1rye"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -21,6 +21,7 @@ ScenesManager="*res://src/singleton/scenes_manager.gd"
 BitmapUtils="*res://src/singleton/bitmap_utils.gd"
 SpriteUtils="*res://src/singleton/sprite_utils.gd"
 ThreadUtils="*res://src/singleton/thread_utils.gd"
+Vector2Utils="*res://src/singleton/vector2_utils.gd"
 
 [editor_plugins]
 

@@ -1,11 +1,6 @@
 extends Sprite2DSvg
 class_name Sprite2DExt
 
-#signal waitNextProcess()
-
-#func getWaitNextProcess() :
-#	return _original_sprite.waitNextProcess
-
 # drag可否
 @export var draggable:bool = false
 
@@ -22,41 +17,37 @@ func _preset_dragging() -> void :
 	signal_just_pressed_mouse_left.connect(Callable(self, "_on_mouse_left_just_pressed"))
 	signal_just_release_mouse_left.connect(Callable(self, "_on_mouse_left_just_released"))
 
-		
+# マウス左押されたときにポインターが画像の不透明部分にあれば
+# 押された座標を記憶させる
 func _on_mouse_left_just_pressed() -> void:
 	var _pos = get_viewport().get_mouse_position()
-	#print(_pos)
 	var l_pos = to_local(_pos)
 	if self.is_pixel_opaque(l_pos):
 		# ポジションとの距離ベクトルを保存
 		_mouse_dis = self.position - _pos
 		
+# マウス左を離したとき、押された座標を消す
 func _on_mouse_left_just_released() -> void:
 	# ポジションとの距離ベクトルを初期化
 	_mouse_dis = VECTOR2_INF
-	
+
+# ドラッグ処理
 func _drag_process() -> void:
 	if draggable :
 		if _mouse_dis.x == VECTOR2_INF.x:
 			# マウス左を離した後
 			return
-
+		# マウスポインター座標に応じてスプライト位置を変える
 		var _pos = self.get_viewport().get_mouse_position()
 		var _drag_pos = _mouse_dis + _pos
 		self.position = _drag_pos
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if self.draggable:
+		# ドラッグ処理の初期処理
 		_preset_dragging()
-	
-	#print("self._cloned=", self._cloned)
-	if self._cloned == false: 
-		self._original_sprite = self
-	#print("self._original_sprite=", self._original_sprite)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	# ドラッグ対応
 	if self.draggable:
@@ -65,11 +56,3 @@ func _physics_process(delta: float) -> void:
 			signal_just_pressed_mouse_left.emit()
 		if Input.is_action_just_released("mouse_left"):
 			signal_just_release_mouse_left.emit()
-			
-#	# scale変更されたとき「衝突判定近傍距離」変化するため再計算する
-#	if prev_scale != self.scale:
-#		for key:String in self._svg_img_keys:
-#			var svg_obj:SvgObj = self._svg_img_map.get(key)
-#			svg_obj.distance = self.costumes.calculate_distance(svg_obj)
-#			#print("scale change distance = ", svg_obj.distance)
-#		prev_scale = self.scale

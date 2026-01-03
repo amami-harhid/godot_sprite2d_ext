@@ -20,12 +20,7 @@ func _hidouki() -> bool:
 	return true
 
 func _physics_process(delta: float) -> void:
-	#print("_hidouki_val=", _hidouki_val)
-	#var time_start = Time.get_unix_time_from_system()
-	ThreadUtils.waitNextFrame.emit()
-	#var size = ThreadUtils.waitNextFrame.get_connections().size()
-	#print("size=",size)
-	#ThreadUtils.waitNextFrame1.emit()
+	ThreadUtils.waitNextFrame.emit(delta) # 引数は意味なし
 
 func _loop_next_scene()->void:
 	await ThreadUtils.sleep(0.5)
