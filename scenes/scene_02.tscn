@@ -16,3 +16,9 @@ pixel_spacing = 10
 [node name="Ball" type="Sprite2D" parent="."]
 script = ExtResource("3_48bg7")
 pixel_spacing = 10
+
+[node name="Label" type="Label" parent="."]
+offset_left = 3.0
+offset_right = 283.0
+offset_bottom = 23.0
+text = "Escape key :  back to the main menu"

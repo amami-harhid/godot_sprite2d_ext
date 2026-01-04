@@ -4,8 +4,13 @@
 extends Node
 
 # 画面のロード
+var scene_main: PackedScene = preload("res://scenes/main.tscn")
 var scene_01: PackedScene = preload("res://scenes/scene_01.tscn")
 var scene_02: PackedScene = preload("res://scenes/scene_02.tscn")
+
+# Scene01に切り替え
+func load_scene_main() -> void:
+	get_tree().change_scene_to_packed(scene_main)
 
 # Scene01に切り替え
 func load_scene01() -> void:

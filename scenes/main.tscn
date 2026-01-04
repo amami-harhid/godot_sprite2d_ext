@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://diis6a34xrdm8"]
+
+[ext_resource type="Script" uid="uid://tryjc8fvxfp1" path="res://src/main.gd" id="1_o5qli"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_o5qli")
+
+[node name="Label01" type="Label" parent="."]
+offset_left = 68.0
+offset_top = 47.0
+offset_right = 108.0
+offset_bottom = 70.0
+text = "Key 1 : Collision sample, a crab hits a niwatori"
+
+[node name="Label02" type="Label" parent="."]
+offset_left = 69.0
+offset_top = 90.0
+offset_right = 394.0
+offset_bottom = 113.0
+text = "Key 2 : Collision sample , cloned balls atack the scratch cat"

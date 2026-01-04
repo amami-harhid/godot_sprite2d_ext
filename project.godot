@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Sprite2DExt_Prototype"
-run/main_scene="uid://crn0kv5hj1rye"
+run/main_scene="uid://diis6a34xrdm8"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 

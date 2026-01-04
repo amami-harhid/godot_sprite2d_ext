@@ -22,19 +22,19 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 
 	var rect:Rect2 = own.get_rect()
 	var target_rect_in_own:Array[Vector2] = get_rectangle_from_target(own, target)
-
+	'''
 	# For Debug( ノード Viewerへ 重なる点を描画する )
-	#if caller == CALLER.OWN:
-	#	var Viewer = $"../Scene01/Viewer"
-	#	Viewer.texture = ImageTexture.new()
-	#	var image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
-	#	image.fill(Color(0,0,0,1))
-	#	for pos in svg_obj.surrounding_point_arr:
-	#		if Vector2Utils.point_is_inside(pos, target_rect_in_own):
-	#			var _pos = pos + rect.size / 2
-	#			image.set_pixel(_pos.x, _pos.y, Color(1,1,1,1))
-	#	Viewer.texture.set_image(image)
-
+	if caller == CALLER.OWN:
+		var Viewer = $"../Scene01/Viewer"
+		Viewer.texture = ImageTexture.new()
+		var image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
+		image.fill(Color(0,0,0,1))
+		for pos in svg_obj.surrounding_point_arr:
+			if Vector2Utils.point_is_inside(pos, target_rect_in_own):
+				var _pos = pos + rect.size / 2
+				image.set_pixel(_pos.x, _pos.y, Color(1,1,1,1))
+		Viewer.texture.set_image(image)
+	'''
 
 	# 自身の矩形と相手の矩形（四角形）の衝突判定
 	# 相手の矩形は回転していることを前提に衝突判定をする

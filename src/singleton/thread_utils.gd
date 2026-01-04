@@ -4,7 +4,10 @@ extends Node
 # プロセスのループの同期をとるためのシグナル
 # シーン内の一か所（トップノード内）で emit をする前提とする
 signal waitNextFrame()
-#signal waitNextFrame1()
+
+# シーンを終わる
+signal stop_scene()
+
 
 # PROCESS_ALWAYS( Engine停止時に、停止する )
 # when false, the timer will be paused when setting paused to true

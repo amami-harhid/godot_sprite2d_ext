@@ -34,6 +34,10 @@ func _ready() -> void:
 		_loop_shoot()
 		_loop_hit()
 
+	ThreadUtils.stop_scene.connect(
+		func(): _freeSignal.emit(self)
+	)
+
 func _loop_clone() ->void:
 	for idx in range(20):
 			
