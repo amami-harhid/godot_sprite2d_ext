@@ -32,22 +32,26 @@ func point_is_inside(point:Vector2, rect:Array[Vector2])->bool:
 	if size != 4 : # 頂点は４個
 		return false
 	for idx in range(size):
+		# 基本点(o)
 		var o:Vector2 = rect.get(idx)
-		# 隣（前）の点
+		# 隣（前）の点(A)
 		var idx_A:int = idx -1
 		if idx == 0 :
 			idx_A = size -1
 		var v_A:Vector2 = rect.get(idx_A)
-		# 隣（後）の点
+		# 隣（後）の点(B)
 		var idx_B = idx +1
 		if idx == size -1:
 			idx_B = 0
 		var v_B:Vector2 = rect.get(idx_B)
 		# 隣（前）の点と指定点に向いたベクトル同士との内積
-		var d1 = (v_A-o).dot((point-o))
+		var d1 = (v_A-o).dot(point-o)
 		# 隣（後）の点と指定点に向いたベクトル同士との内積
-		var d2 = (v_B-o).dot((point-o))
-		# 内積のどちらかがマイナスのとき 指定点は外にある
+		var d2 = (v_B-o).dot(point-o)
+		# OA と OB は 90°の角度で交わる
+		# OAとOPの角度、OBとOP の角度が 90°以下(内積≧0)の場合、
+		# 点Pは点Oからみると矩形の内側（辺上を含む）の方向にある。
+		# 内積のどちらかがマイナスのとき 指定点(P)は点Oからみて矩形の外側の方向にある
 		if d1 < 0 or d2 < 0:
 			return false
 	return true

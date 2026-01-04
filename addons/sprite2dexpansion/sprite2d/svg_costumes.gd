@@ -125,6 +125,11 @@ func _get_svg_img_map()-> Dictionary:
 # 画像ピクセルで判定する衝突判定
 # スプライト自身の表示サイズが大のときの高速化を図りたい
 func _is_pixel_touched(_target:Sprite2DExt) -> Hit :
-	#var circle :Sprite2D = $"/root/Node2D/Circle"
+	# 見えないときは衝突しない
+	if self.sprite.visible == false:
+		return Hit.new()
+	if _target.visible == false:
+		return Hit.new()
+		
 	var hit = SpriteUtils.is_touched(self.sprite, _target)
 	return hit
