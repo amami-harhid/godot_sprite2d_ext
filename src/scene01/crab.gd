@@ -19,8 +19,8 @@ func _ready() -> void:
 	self._loop01() # 左右矢印キー押下時にX方向に少しだけ移動する
 	self._loop02() # ターゲット（ニワトリ）とのBITMAP衝突判定をし続ける
 	self._loop03() # ドラッグ可のとき、ドラッグ移動し続ける
-	self._loop04() # 次のコスチュームに切り替え続ける
-	self._loop05() # ターゲットと衝突している間、回転し続ける
+	#self._loop04() # 次のコスチュームに切り替え続ける
+	#self._loop05() # ターゲットと衝突している間、回転し続ける
 
 # 左右矢印キー押下時にX方向に少しだけ移動する
 func _loop01() -> void :
@@ -42,10 +42,10 @@ func _loop02() -> void:
 	circle.visible = false  # 小円を隠す
 	var target:Sprite2DExt = $"/root/Scene01/Niwatori"
 	while true:
-		#var time_start = ThreadUtils.get_time()
+		var time_start = ThreadUtils.get_time()
 		var hitter:Hit = costumes._is_pixel_touched(target)
 		if hitter.hit == true:
-			#print("time=",ThreadUtils.get_time()-time_start)
+			print("time=",ThreadUtils.get_time()-time_start,",surrounding size=",hitter.surrounding_size, ",touch_idx=",hitter.touch_idx)
 			# BITMAP衝突しているとき
 			self.modulate = Color(0.1, 0.1, 1, 0.5) # 青くする
 			circle.position = self.to_global(hitter.position) 

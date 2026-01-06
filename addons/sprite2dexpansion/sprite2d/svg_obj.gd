@@ -2,12 +2,12 @@
 class_name SvgObj 
 var name : String
 var rect: Rect2
+var image: Image
 var svg_text: String
 var svg_scale: float = 1.0
 var svg_scale_created : float = 1.0
 var texture: ImageTexture = ImageTexture.new()
 var surrounding_point_arr = [] # 不透明部分の外周ピクセル配列
-
 var empty:bool = false
 # コンストラクター
 func _init(_empty:bool = false) :
@@ -17,7 +17,9 @@ func _init(_empty:bool = false) :
 func get_image()->Image:
 	if self.svg_scale != self.svg_scale_created:
 		self.create_svg_from_text()
-	return self.texture.get_image()
+	if image == null:
+		image = self.texture.get_image()
+	return image
 
 # テキスチャーを取り出す
 func get_texture()->ImageTexture:

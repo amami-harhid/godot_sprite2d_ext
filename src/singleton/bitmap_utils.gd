@@ -17,11 +17,13 @@ func opaque_pixels(_image:Image)-> Array:
 func surrounding_points(_image: Image, skip_count: int) -> Array:
 	var size:Vector2i = _image.get_size()	
 	var _opaque_arr:Array[Vector2] = []
+	# 横方向へ走査
 	for _x:int in range(size.x):
 		var x = _x
 		var pixel:Color = _image.get_pixel(x, 0)
 		if pixel.a > 0:
 			_opaque_arr.append(Vector2(_x, 0))
+		# 縦方向へ走査( 2番目から最後の一つ前まで）
 		for _y:int in range(size.y -2):
 			var y:int = _y + 1
 			var pixel00 = _image.get_pixel(x, y-1)
@@ -45,7 +47,7 @@ func surrounding_points(_image: Image, skip_count: int) -> Array:
 							_opaque_arr.append(Vector2(x, y))
 				else:
 					_opaque_arr.append(Vector2(x, y))
-
+		# 縦方向の最後の分
 		pixel = _image.get_pixel(x, size.y-1)
 		if pixel.a > 0:
 			#arr.append(pixel)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://crn0kv5hj1rye"]
 
 [ext_resource type="Script" uid="uid://c0hg31fkua2bc" path="res://src/scene01/scene_01.gd" id="1_nnx6g"]
-[ext_resource type="Script" uid="uid://chfviikpech1m" path="res://src/scene01/grab.gd" id="2_mxulj"]
+[ext_resource type="Script" uid="uid://chfviikpech1m" path="res://src/scene01/crab.gd" id="2_mxulj"]
 [ext_resource type="Script" uid="uid://bma2aixdkphrn" path="res://src/scene01/niwatori.gd" id="3_wtt3i"]
 [ext_resource type="Texture2D" uid="uid://by0a4e27w4hhb" path="res://assets/ball-a.svg" id="4_hxtnk"]
 [ext_resource type="Texture2D" uid="uid://dibvt3kdivawj" path="res://assets/crab-a.svg" id="5_mxulj"]
@@ -12,8 +12,10 @@ script = ExtResource("1_nnx6g")
 [node name="Crab" type="Sprite2D" parent="."]
 z_index = 2
 y_sort_enabled = true
+scale = Vector2(-1, 1)
 script = ExtResource("2_mxulj")
 draggable = true
+pixel_spacing = 3
 
 [node name="Niwatori" type="Sprite2D" parent="."]
 script = ExtResource("3_wtt3i")

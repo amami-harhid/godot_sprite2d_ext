@@ -20,25 +20,36 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 		hitter.hit = false
 		return hitter
 
-	var rect:Rect2 = own.get_rect()
-	var target_rect_in_own:Array[Vector2] = get_rectangle_from_target(own, target)
+	# 外周点配列はグローバル座標に変換しておく
+	#var _surrounding_point_arr:Array[Vector2] = change_order_surrounding_points(svg_obj.surrounding_point_arr)
+	var _surrounding_point_arr:Array[Vector2] = svg_obj.surrounding_point_arr
+	var global_surrounding_point_arr:Array[Vector2] = []
+	for p:Vector2 in _surrounding_point_arr:
+		global_surrounding_point_arr.append(own.to_global(p))
+
+	# 自分自身、相手の画像矩形の４点をグローバル座標の配列にしておく
+	var g_rect:Array[Vector2] = get_rectangle_arr(own)
+	var g_target_rect:Array[Vector2] = get_rectangle_arr(target)
+	
 	'''
 	# For Debug( ノード Viewerへ 重なる点を描画する )
+	# Debug用なので Viewerノードの参照は適当です
 	if caller == CALLER.OWN:
 		var Viewer = $"../Scene01/Viewer"
 		Viewer.texture = ImageTexture.new()
 		var image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
 		image.fill(Color(0,0,0,1))
-		for pos in svg_obj.surrounding_point_arr:
-			if Vector2Utils.point_is_inside(pos, target_rect_in_own):
-				var _pos = pos + rect.size / 2
+		for g_pos in global_surrounding_point_arr:
+			# グローバル座標上で比較する
+			if Vector2Utils.point_is_inside(g_pos, target_rect_global):
+				var _pos = own.to_local(g_pos) + rect.size / 2
 				image.set_pixel(_pos.x, _pos.y, Color(1,1,1,1))
 		Viewer.texture.set_image(image)
 	'''
 
 	# 自身の矩形と相手の矩形（四角形）の衝突判定
 	# 相手の矩形は回転していることを前提に衝突判定をする
-	var _collision = collision_rect2_to_array(rect, target_rect_in_own)
+	var _collision = collision_rect_to_rect(g_rect, g_target_rect)
 	if _collision == false: # 衝突していない
 		# 近傍にないと判定する
 		hitter.hit = false
@@ -50,24 +61,33 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 	# 相手の矩形に含まれる外周座標に絞り込んで衝突判定をする
 
 	# 不透明の境界の点を使い、衝突判定をする
-	for pos:Vector2 in svg_obj.surrounding_point_arr:
-		# 相手の矩形の中にある点の場合のみ、衝突判定をする
-		if Vector2Utils.point_is_not_inside(pos, target_rect_in_own):
+	#if( caller == CALLER.OWN):
+	#	print("global_surrounding_point_arr size=", global_surrounding_point_arr.size())
+	var touch_idx:int = 0
+	for g_pos:Vector2 in global_surrounding_point_arr:
+		touch_idx += 1
+		# グローバル座標どおし、相手の矩形の中にある点の場合のみ、衝突判定をする
+		if Vector2Utils.point_is_not_inside(g_pos, g_target_rect):
 			continue
-		var _pos_g:Vector2 = own.to_global(pos)
-		var _pos_t_l:Vector2 = target.to_local(_pos_g)
 		# is_pixel_opaqueは、スプライトのScale,Rotationを考慮して
 		# 不透明判定をしてくれる。自前で画像(Image)から座標ピクセルを取り出して
 		# 不透明判定をする方法もあるが、Scale/Rotationの値どおりに画像を変換させる
 		# 必要があるので、is_pixel_opaque の方が使いやすい。
-		if target.is_pixel_opaque(_pos_t_l):
-			hitter.position = pos
+		
+		if is_pixel_opaque(target, target_svg_obj, g_pos):
+		# 相手とのBITMAP衝突判定のために、相手のローカル座標にする
+		#var _pos_t_l:Vector2 = target.to_local(g_pos)
+		#if target.is_pixel_opaque(_pos_t_l):
+			hitter.position = own.to_local(g_pos)
 			hitter.hit = true
+			hitter.touch_idx = touch_idx
+			hitter.surrounding_size = global_surrounding_point_arr.size()
 			return hitter
 
 	# 周囲の線だけによる衝突判定であるため、相手が自身の画像のなかに
 	# 完全に入ってしまっているときには「衝突」とみなされない
 	# その場合、相手側から衝突判定を再度行う。
+	'''
 	if( caller == CALLER.OWN):
 		# 自身を起点とした衝突判定の場合
 		# 相手の周囲の線から自身への衝突判定
@@ -81,22 +101,59 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 			var own_pos = own.to_local(pos_g)
 			hitter2.position = own_pos
 			return hitter2
+	'''
 		
 	hitter.position = Vector2(-INF, -INF)
 	return hitter
 
-# 相手画像を囲む矩形(Rect2)にある４点の頂点座標を
-# 自分のスプライト上のローカル座標の配列（要素４個）にする
-func get_rectangle_from_target(_own:Sprite2DExt, _target:Sprite2DExt)->Array[Vector2]:
-	var _rect:Rect2 = _target.get_rect()
+# これは暫定「その場しのぎ」
+func is_pixel_opaque(sprite: Sprite2DExt, svjObj:SvgObj, pos:Vector2)->bool:
+	var pos_local:Vector2 = sprite.to_local(pos)
+	if sprite.is_pixel_opaque(pos_local):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(1,0)):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(1,1)):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(1,-1)):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,0)):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,1)):
+		return true
+	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,-1)):
+		return true
+	return false
+
+func change_order_surrounding_points(_surrounding:Array[Vector2])->Array[Vector2]:
+	var size:int = _surrounding.size()
+	var break_number:int = 50
+	var division_size:int = int((size*1.0)/break_number)
+	var remainder:int = int(size) - division_size*break_number
+	#print("size=",size, ", break_number=", break_number, ",division_size=", division_size, ",remainder=", remainder)
+	var _arr:Array[Vector2] = []
+	for _idx in range(division_size):
+		for idx in range(break_number):
+			#print("idx=",idx,",_idx=",_idx,",idx*division_size+_idx=", idx*division_size+_idx)
+			var _p:Vector2 = _surrounding.get(idx*division_size+_idx)
+			_arr.append(_p)
+	for _idx in range(remainder):
+		var _p:Vector2 = _surrounding.get(size - remainder +_idx)
+		_arr.append(_p)
+		
+	return _arr
+# スプライト画像を囲む矩形(Rect2)にある４点の頂点座標を
+# グローバル座標の配列（要素４個）にする
+func get_rectangle_arr(_sprite:Sprite2DExt)->Array[Vector2]:
+	var _rect:Rect2 = _sprite.get_rect()
 	var _pos_target_arr: Array[Vector2] = Vector2Utils.rect2_to_array(_rect)
-	var _pos_own: Array[Vector2] = []
+	var _pos_arr: Array[Vector2] = []
 	for _pos in _pos_target_arr:
-		var _pos_g = _target.to_global(_pos)
-		_pos_own.append(
-			_own.to_local(_pos_g)
+		var _pos_g = _sprite.to_global(_pos)
+		_pos_arr.append(
+			_pos_g
 		)
-	return _pos_own
+	return _pos_arr
 
 # 矩形(Rect2)と傾きがある長方形(Array[Vector2])との衝突判定
 func collision_rect2_to_array(rect:Rect2, target:Array[Vector2])->bool:
@@ -104,6 +161,20 @@ func collision_rect2_to_array(rect:Rect2, target:Array[Vector2])->bool:
 	var rect_arr:Array[Vector2] = Vector2Utils.rect2_to_array(rect)
 	var _collision:bool = Vector2Utils.collision_rectangle(rect_arr, target)
 	return _collision
+
+# 傾きがある矩形(Array[Vector2])と傾きがある矩形(Array[Vector2])との衝突判定
+func collision_rect_to_rect(rect_arr:Array[Vector2], target:Array[Vector2])->bool:
+	var _collision:bool = Vector2Utils.collision_rectangle(rect_arr, target)
+	return _collision
+
+
+func rect2_to_array_global(rect:Rect2, own:Sprite2DExt)->Array[Vector2] :
+	var rect_arr:Array[Vector2] = Vector2Utils.rect2_to_array(rect)
+	var _arr:Array[Vector2] = []
+	for v in rect_arr:
+		var _v = own.to_global(v)
+		_arr.append(_v)
+	return _arr
 
 # 相手画像を囲む矩形の頂点４座標を自スプライトのローカル座標に変換し
 # 自スプライトのローカルで 水平垂直の辺をもつ矩形(Rect2)にする
