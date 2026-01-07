@@ -21,13 +21,13 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 		return hitter
 
 	# 外周点配列はグローバル座標に変換しておく
-	#var _surrounding_point_arr:Array[Vector2] = change_order_surrounding_points(svg_obj.surrounding_point_arr)
 	var _surrounding_point_arr:Array[Vector2] = svg_obj.surrounding_point_arr
 	var global_surrounding_point_arr:Array[Vector2] = []
 	for p:Vector2 in _surrounding_point_arr:
 		global_surrounding_point_arr.append(own.to_global(p))
 
 	# 自分自身、相手の画像矩形の４点をグローバル座標の配列にしておく
+	# 画像矩形は「Collision Space:Vector2i」の大きさ分、上下左右に拡大しておく
 	var g_rect:Array[Vector2] = get_rectangle_arr(own)
 	var g_target_rect:Array[Vector2] = get_rectangle_arr(target)
 	
@@ -37,11 +37,12 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 	if caller == CALLER.OWN:
 		var Viewer = $"../Scene01/Viewer"
 		Viewer.texture = ImageTexture.new()
+		var rect = own.get_rect()
 		var image = Image.create(int(rect.size.x), int(rect.size.y), false, Image.FORMAT_RGBA8)
 		image.fill(Color(0,0,0,1))
 		for g_pos in global_surrounding_point_arr:
 			# グローバル座標上で比較する
-			if Vector2Utils.point_is_inside(g_pos, target_rect_global):
+			if Vector2Utils.point_is_inside(g_pos, g_target_rect, own.collision_space):
 				var _pos = own.to_local(g_pos) + rect.size / 2
 				image.set_pixel(_pos.x, _pos.y, Color(1,1,1,1))
 		Viewer.texture.set_image(image)
@@ -49,45 +50,36 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 
 	# 自身の矩形と相手の矩形（四角形）の衝突判定
 	# 相手の矩形は回転していることを前提に衝突判定をする
-	var _collision = collision_rect_to_rect(g_rect, g_target_rect)
+	var _collision = collision_rect_to_rect(own, g_rect, g_target_rect)
 	if _collision == false: # 衝突していない
 		# 近傍にないと判定する
 		hitter.hit = false
 		return hitter
 
 	# 以降は、近傍にあるときの衝突判定処理	
-	# 外周点の配列(svg_obj.surrounding_point_arr)は
-	# 中心点を基準点(0,0)としたときの座標である
+	# 外周点の配列(global_surrounding_point_arr)は
+	# ローカル座標視点で画像中心点を基準点(0,0)としたときの座標である（実際はグローバル座標に変換済）
 	# 相手の矩形に含まれる外周座標に絞り込んで衝突判定をする
-
 	# 不透明の境界の点を使い、衝突判定をする
-	#if( caller == CALLER.OWN):
-	#	print("global_surrounding_point_arr size=", global_surrounding_point_arr.size())
 	var touch_idx:int = 0
 	for g_pos:Vector2 in global_surrounding_point_arr:
 		touch_idx += 1
-		# グローバル座標どおし、相手の矩形の中にある点の場合のみ、衝突判定をする
+		# 外周のグローバル座標の点が相手の矩形の中にない場合は、無視する
 		if Vector2Utils.point_is_not_inside(g_pos, g_target_rect):
 			continue
 		# is_pixel_opaqueは、スプライトのScale,Rotationを考慮して
-		# 不透明判定をしてくれる。自前で画像(Image)から座標ピクセルを取り出して
-		# 不透明判定をする方法もあるが、Scale/Rotationの値どおりに画像を変換させる
-		# 必要があるので、is_pixel_opaque の方が使いやすい。
-		
-		if is_pixel_opaque(target, target_svg_obj, g_pos):
-		# 相手とのBITMAP衝突判定のために、相手のローカル座標にする
-		#var _pos_t_l:Vector2 = target.to_local(g_pos)
-		#if target.is_pixel_opaque(_pos_t_l):
-			hitter.position = own.to_local(g_pos)
+		# 不透明判定をしてくれる独自関数。		
+		if is_pixel_opaque(target, own, g_pos, caller):
+			hitter.position = own.to_local(g_pos) # ローカル座標に直す
 			hitter.hit = true
-			hitter.touch_idx = touch_idx
-			hitter.surrounding_size = global_surrounding_point_arr.size()
+			hitter.touch_idx = touch_idx # デバッグ用
+			hitter.surrounding_size = global_surrounding_point_arr.size() # デバッグ用
 			return hitter
 
 	# 周囲の線だけによる衝突判定であるため、相手が自身の画像のなかに
 	# 完全に入ってしまっているときには「衝突」とみなされない
 	# その場合、相手側から衝突判定を再度行う。
-	'''
+	#'''
 	if( caller == CALLER.OWN):
 		# 自身を起点とした衝突判定の場合
 		# 相手の周囲の線から自身への衝突判定
@@ -98,55 +90,54 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt, caller:CALLER = CALLER.OW
 			# 当たっている点を 自分のローカル座標に変換する
 			var target_pos = hitter2.position
 			var pos_g = target.to_global(target_pos)
-			var own_pos = own.to_local(pos_g)
-			hitter2.position = own_pos
+			var own_pos_l = own.to_local(pos_g) # ローカル座標に直す
+			hitter2.position = own_pos_l
 			return hitter2
-	'''
+	#'''
 		
 	hitter.position = Vector2(-INF, -INF)
 	return hitter
 
-# これは暫定「その場しのぎ」
-func is_pixel_opaque(sprite: Sprite2DExt, svjObj:SvgObj, pos:Vector2)->bool:
-	var pos_local:Vector2 = sprite.to_local(pos)
-	if sprite.is_pixel_opaque(pos_local):
+# collision_space: Vector2i  の幅と高さ
+# の範囲で不透明の判定をする
+func is_pixel_opaque(target_sprite: Sprite2DExt, own_sprite: Sprite2DExt, pos_global:Vector2, caller:CALLER)->bool:
+	var pos_local:Vector2 = target_sprite.to_local(pos_global)
+	if target_sprite.is_pixel_opaque(pos_local):
 		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(1,0)):
-		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(1,1)):
-		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(1,-1)):
-		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,0)):
-		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,1)):
-		return true
-	elif sprite.is_pixel_opaque(pos_local+Vector2(-1,-1)):
-		return true
+
+	if caller != CALLER.OWN:
+		return false
+	var collision_space: Vector2i = own_sprite.collision_space
+	#print("collision_space=", collision_space)
+	var c_x = collision_space.x
+	var c_y = collision_space.y
+	if c_x < 1 or c_y < 1:
+		return false
+	for x in range(c_x):
+		for y in range(c_y):
+			if x == 0 and y == 0:
+				continue
+			#print("x=",x,",y=",y)
+			var _pos01_g = pos_global - Vector2(x,y)
+			var _pos01_l = target_sprite.to_local(_pos01_g)
+			var _opaque01 = target_sprite.is_pixel_opaque(_pos01_l)
+			if _opaque01 :
+				return true
+			var _pos02_g = pos_global + Vector2(x,y)
+			var _pos02_l = target_sprite.to_local(_pos02_g)
+			var _opaque02 = target_sprite.is_pixel_opaque(_pos02_l)
+			if _opaque02 :
+				return true
 	return false
 
-func change_order_surrounding_points(_surrounding:Array[Vector2])->Array[Vector2]:
-	var size:int = _surrounding.size()
-	var break_number:int = 50
-	var division_size:int = int((size*1.0)/break_number)
-	var remainder:int = int(size) - division_size*break_number
-	#print("size=",size, ", break_number=", break_number, ",division_size=", division_size, ",remainder=", remainder)
-	var _arr:Array[Vector2] = []
-	for _idx in range(division_size):
-		for idx in range(break_number):
-			#print("idx=",idx,",_idx=",_idx,",idx*division_size+_idx=", idx*division_size+_idx)
-			var _p:Vector2 = _surrounding.get(idx*division_size+_idx)
-			_arr.append(_p)
-	for _idx in range(remainder):
-		var _p:Vector2 = _surrounding.get(size - remainder +_idx)
-		_arr.append(_p)
-		
-	return _arr
 # スプライト画像を囲む矩形(Rect2)にある４点の頂点座標を
 # グローバル座標の配列（要素４個）にする
 func get_rectangle_arr(_sprite:Sprite2DExt)->Array[Vector2]:
 	var _rect:Rect2 = _sprite.get_rect()
-	var _pos_target_arr: Array[Vector2] = Vector2Utils.rect2_to_array(_rect)
+	var _collision_space = Vector2(_sprite.collision_space.x, _sprite.collision_space.y)
+	#_rect.position -= _collision_space
+	var _rect2:Rect2 = Rect2(_rect.position-_collision_space, _rect.size+_collision_space*2)
+	var _pos_target_arr: Array[Vector2] = Vector2Utils.rect2_to_array(_rect2)
 	var _pos_arr: Array[Vector2] = []
 	for _pos in _pos_target_arr:
 		var _pos_g = _sprite.to_global(_pos)
@@ -156,19 +147,21 @@ func get_rectangle_arr(_sprite:Sprite2DExt)->Array[Vector2]:
 	return _pos_arr
 
 # 矩形(Rect2)と傾きがある長方形(Array[Vector2])との衝突判定
-func collision_rect2_to_array(rect:Rect2, target:Array[Vector2])->bool:
+func collision_rect2_to_array(own:Sprite2DExt, rect:Rect2, target:Array[Vector2])->bool:
+	var collision_space:Vector2i = own.collision_space
 	# Rect2の矩形の頂点（４個）を配列にする
 	var rect_arr:Array[Vector2] = Vector2Utils.rect2_to_array(rect)
 	var _collision:bool = Vector2Utils.collision_rectangle(rect_arr, target)
 	return _collision
 
 # 傾きがある矩形(Array[Vector2])と傾きがある矩形(Array[Vector2])との衝突判定
-func collision_rect_to_rect(rect_arr:Array[Vector2], target:Array[Vector2])->bool:
-	var _collision:bool = Vector2Utils.collision_rectangle(rect_arr, target)
+func collision_rect_to_rect(own: Sprite2DExt, own_rect_arr:Array[Vector2], target_rect_arr:Array[Vector2])->bool:
+	var _collision:bool = Vector2Utils.collision_rectangle(own_rect_arr, target_rect_arr)
 	return _collision
 
 
 func rect2_to_array_global(rect:Rect2, own:Sprite2DExt)->Array[Vector2] :
+	var collision_space: Vector2i = own.collision_space
 	var rect_arr:Array[Vector2] = Vector2Utils.rect2_to_array(rect)
 	var _arr:Array[Vector2] = []
 	for v in rect_arr:

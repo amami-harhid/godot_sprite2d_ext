@@ -29,9 +29,9 @@ func _loop01() -> void :
 		if Input.is_action_just_pressed("key_escape"):
 			break
 		if Input.is_action_pressed("key_left"):
-			self.position.x -= 0.3
+			self.position.x -= 0.1
 		if Input.is_action_pressed("key_right"):
-			self.position.x += 0.3
+			self.position.x += 0.1
 		#await sleep(0.5)
 		await ThreadUtils.waitNextFrame
 
@@ -49,7 +49,7 @@ func _loop02() -> void:
 			# BITMAP衝突しているとき
 			self.modulate = Color(0.1, 0.1, 1, 0.5) # 青くする
 			circle.position = self.to_global(hitter.position) 
-			circle.visible = true # 小円を見せる
+			#circle.visible = true # 小円を見せる
 			label.text = "Hit!(当たっている)"
 			_rotationer = true # 衝突している
 		elif hitter.position.x == INF:

@@ -4,6 +4,8 @@ class_name Sprite2DExt
 # drag可否
 @export var draggable:bool = false
 
+@export var collision_space:Vector2i = Vector2i(1,1)
+
 # original sprite when cloned
 var _original_sprite: Sprite2DExt
 
