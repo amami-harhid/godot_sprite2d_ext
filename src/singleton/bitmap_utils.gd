@@ -14,7 +14,7 @@ func opaque_pixels(_image:Image)-> Array:
 	return _arr
 
 # 不透明の点より、外周部の点を抽出する
-func surrounding_points(_image: Image, skip_count: int) -> Array:
+func surrounding_points(_image: Image) -> Array:
 	var size:Vector2i = _image.get_size()	
 	var _opaque_arr:Array[Vector2] = []
 	# 横方向へ走査
@@ -52,18 +52,14 @@ func surrounding_points(_image: Image, skip_count: int) -> Array:
 		if pixel.a > 0:
 			#arr.append(pixel)
 			_opaque_arr.append(Vector2(x, size.y -1))
-		
+
 	var _surroundings:Array[Vector2] = []
 	var _opaque_size: int = _opaque_arr.size()
-	# 座標をスキップさせる
 	# 画像中心を基準とした座標に変換する
 	for idx in range(_opaque_size):
-		# スキップ無しの指定の場合、外周に追加
-		# または、スキップの長さごとに外周に追加
-		if skip_count == 0 or idx % skip_count == 0:
-			var _pos:Vector2 = _opaque_arr.get(idx)
-			# 画像中心を基準(0,0)とした座標へ変換
-			var _pos_m:Vector2 = Vector2(2*_pos.x-size.x, 2*_pos.y-size.y)/2
-			_surroundings.append(_pos_m)
+		var _pos:Vector2 = _opaque_arr.get(idx)
+		# 画像中心を基準(0,0)とした座標へ変換
+		var _pos_m:Vector2 = Vector2(2*_pos.x-size.x, 2*_pos.y-size.y)/2
+		_surroundings.append(_pos_m)
 		
 	return _surroundings

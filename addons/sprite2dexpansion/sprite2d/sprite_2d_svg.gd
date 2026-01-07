@@ -5,7 +5,7 @@ class_name Sprite2DSvg
 @export var svg_scale: float = 1.0
 
 # Bitmap Collision pixel spacing
-@export var pixel_spacing: int = 0
+#@export var pixel_spacing: int = 0
 
 @onready var prev_scale: Vector2 = self.scale
 

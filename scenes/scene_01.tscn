@@ -12,18 +12,12 @@ script = ExtResource("1_nnx6g")
 [node name="Crab" type="Sprite2D" parent="."]
 z_index = 2
 y_sort_enabled = true
-scale = Vector2(-1, 1)
 script = ExtResource("2_mxulj")
 draggable = true
-collision_space = Vector2i(2, 2)
-pixel_spacing = 3
 
 [node name="Niwatori" type="Sprite2D" parent="."]
-z_index = 5
 script = ExtResource("3_wtt3i")
-collision_space = Vector2i(2, 2)
 svg_scale = 2.0
-pixel_spacing = 10
 
 [node name="Label" type="Label" parent="."]
 offset_left = 33.0
