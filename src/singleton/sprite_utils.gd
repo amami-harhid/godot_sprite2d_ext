@@ -31,7 +31,7 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt)->Hit:
 	var g_rect:Array[Vector2] = get_rectangle_arr(own)
 	var g_target_rect:Array[Vector2] = get_rectangle_arr(target)
 	
-	'''
+	#'''
 	# For Debug( ノード Viewerへ 重なる点を描画する )
 	# Debug用なので Viewerノードの参照は適当です
 	var Viewer = $"../Scene01/Viewer"
@@ -45,7 +45,7 @@ func is_touched( own: Sprite2DExt, target:Sprite2DExt)->Hit:
 			var _pos = own.to_local(g_pos) + rect.size / 2
 			image.set_pixel(_pos.x, _pos.y, Color(1,1,1,1))
 	Viewer.texture.set_image(image)
-	'''
+	#'''
 
 	# 自身の矩形と相手の矩形（四角形）の衝突判定
 	# 相手の矩形は回転していることを前提に衝突判定をする

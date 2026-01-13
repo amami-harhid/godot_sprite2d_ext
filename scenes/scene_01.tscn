@@ -34,7 +34,6 @@ position = Vector2(50, 50)
 texture = ExtResource("4_hxtnk")
 
 [node name="Viewer" type="Sprite2D" parent="."]
-visible = false
 position = Vector2(774, 145)
 scale = Vector2(2, 2)
 texture = ExtResource("5_mxulj")

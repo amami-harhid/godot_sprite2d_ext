@@ -13,6 +13,30 @@ func opaque_pixels(_image:Image)-> Array:
 				_arr.append(_pos / 2)
 	return _arr
 
+# 不透明部分の外周部を抽出する（Suzuki85-Method)
+func get_surrounding_points(_image: Image, _number_of_skip:int=0) -> Array[Vector2]:
+	var _image_size:Vector2i = _image.get_size()
+	var _points:Array[Cell] = []
+	var _contour_detection:ContourDetection = ContourDetection.new()
+	var _scan:RasterScan = _contour_detection.raster_scan(_image)
+	var _count = 0
+	for _contour:Contour in _scan.contours:
+		for _cell:Cell in _contour.list():
+			if _number_of_skip==0 or _count%_number_of_skip==0:
+				_points.append(_cell)
+			_count+=1
+	
+	var _surroundings:Array[Vector2] = []
+	var _points_size: int = _points.size()
+	# 画像中心を基準とした座標に変換する
+	for idx in range(_points_size):
+		var _cell:Cell = _points.get(idx)
+		# 画像中心を基準(0,0)とした座標へ変換
+		var _pos_m:Vector2 = Vector2(2*_cell.j-_image_size.x, 2*_cell.i-_image_size.y)/2
+		_surroundings.append(_pos_m)
+	return _surroundings
+
+# TODO 使用していないので後で消す
 # 不透明の点より、外周部の点を抽出する
 func surrounding_points(_image: Image) -> Array:
 	var size:Vector2i = _image.get_size()	
