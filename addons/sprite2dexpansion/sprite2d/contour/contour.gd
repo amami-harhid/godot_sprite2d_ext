@@ -27,6 +27,12 @@ func getElement(indx: int) -> Cell:
 
 func list()->Array[Cell]:
 	return _contour
+	
+func list_vector2()->Array[Vector2]:
+	var _va = []
+	for _cell in _contour:
+		_va.append( _cell.to_vector2())
+	return _va
 
 func _to_string() -> String:
 	var _str = ""

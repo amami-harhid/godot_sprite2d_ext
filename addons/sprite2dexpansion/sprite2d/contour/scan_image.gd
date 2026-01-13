@@ -18,8 +18,8 @@ func _threshold(image: Image)->Array[Array]:
 	var size:Vector2i = image.get_size()
 #	rows = size.y + 10
 #	cols = size.x + 10
-	rows = size.y
-	cols = size.x
+	rows = size.y + 2
+	cols = size.x + 2
 
 	for i in range(rows): # 縦方向
 		if i == 0 or i == rows-1:

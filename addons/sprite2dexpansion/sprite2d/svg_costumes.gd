@@ -41,7 +41,8 @@ func svg_file_path_setting(svg_path_arr: Array) -> void:
 				# 不透明なピクセル座標（Local)を配列化
 				var _img = svg_obj.get_image()
 				#svg_obj.surrounding_point_arr = BitmapUtils.surrounding_points(_img)
-				svg_obj.surrounding_point_arr = BitmapUtils.get_surrounding_points(_img,0)
+				var _surounding_skips = self.sprite.surounding_skips
+				svg_obj.surrounding_point_arr = BitmapUtils.get_surrounding_points(_img,_surounding_skips)
 		else:
 			print("ivalid path = ", path)
 	

@@ -6,6 +6,8 @@ class_name Sprite2DExt
 
 @export var collision_space:Vector2 = Vector2(1.0,1.0)
 
+@export var surounding_skips:int = 0
+
 # original sprite when cloned
 var _original_sprite: Sprite2DExt
 
