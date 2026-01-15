@@ -22,7 +22,7 @@ func get_surrounding_points(_image: Image, _number_of_skip:int=0) -> Array[Vecto
 
 	# 指定した間隔でセル情報をスキップさせ、輪郭点の配列を作る
 	var _count = 0
-	for _contour:ContourDetection.Contour in _contours_info.contour_list():
+	for _contour:ContourDetection.Contour in _contours_info.list():
 		for _cell:ContourDetection.Cell in _contour.list():
 			if _number_of_skip==0 or _count%_number_of_skip==0:
 				_points.append(_cell.to_vector2())

@@ -48,4 +48,11 @@ offset_right = 283.0
 offset_bottom = 24.0
 text = "Escape key :  back to the main menu"
 
+[node name="Label3" type="Label" parent="."]
+offset_left = 710.0
+offset_top = 62.0
+offset_right = 849.0
+offset_bottom = 85.0
+text = "Contour points"
+
 [connection signal="tree_entered" from="Viewer" to="Crab" method="_on_viewer_tree_entered"]
