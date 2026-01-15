@@ -57,7 +57,7 @@ Scratch3風に 「次のコスチューム」みたいなメソッドを用意�
 指定した秒数分、処理を止めるメソッドを用意しました。
 
 ```:gdscript
-    await ThreadUtils.sleep(1)       # 1秒待つ
+	await ThreadUtils.sleep(1)       # 1秒待つ
 ```
 
 ## ずっとブロック風の表現に挑戦
@@ -69,10 +69,10 @@ func _ready() -> void:
 	_loop()  # 非同期処理(ずっと繰返し)を開始
 
 func _loop() -> void:
-    while true:
-        await ThreadUtils.sleep(0.5)    # 0.5秒待つ
-        self.costumes.next_svg_tex()    # 次のコスチュームにする
-        await ThreadUtils.waitNextFrame # Processループタイミングを合わせる
+	while true:
+		await ThreadUtils.sleep(0.5)    # 0.5秒待つ
+		self.costumes.next_svg_tex()    # 次のコスチュームにする
+		await ThreadUtils.waitNextFrame # Processループタイミングを合わせる
 ```
 
 ## bitmap collision
@@ -99,4 +99,3 @@ Scratch3の「動き」ブロック、「見た目」ブロック、「イベン
 用意してみたいです。
 
 そして、子ども向けプログラミング教材に仕上げてみたいです。
-

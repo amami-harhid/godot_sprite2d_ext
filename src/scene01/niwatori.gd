@@ -6,7 +6,7 @@ extends Sprite2DExt
 func _ready() -> void:
 	super._ready()
 	position.x = 350
-	position.y = 350
+	position.y = 450
 	# コスチューム画像を読み込む
 	costumes.svg_file_path_setting([
 		"res://assets/hen-a.svg",
@@ -17,7 +17,7 @@ func _ready() -> void:
 	
 	# 無限ループスレッドを起動（２個）
 	self._loop01() # 次のコスチュームに切り替えし続ける
-	#self._loop02() # 回転し続ける
+	self._loop02() # 回転し続ける
 
 # 次のコスチュームに切り替えし続ける
 func _loop01() -> void :

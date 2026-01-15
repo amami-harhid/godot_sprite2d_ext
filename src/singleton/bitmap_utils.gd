@@ -17,15 +17,18 @@ func opaque_pixels(_image:Image)-> Array:
 func get_surrounding_points(_image: Image, _number_of_skip:int=0) -> Array[Vector2]:
 	var _image_size:Vector2i = _image.get_size()
 	var _points:Array[Vector2] = []
-	var _contour_detection:ContourDetection = ContourDetection.new()
-	var _scan:RasterScan = _contour_detection.raster_scan(_image)
+	var _detection:ContourDetection.Detection = ContourDetection.Detection.new()
+	var _contours_info:ContourDetection.ContoursInfo = _detection.raster_scan(_image)
+
+	# 指定した間隔でセル情報をスキップさせ、輪郭点の配列を作る
 	var _count = 0
-	for _contour:Contour in _scan.contours:
-		for _cell:Cell in _contour.list():
+	for _contour:ContourDetection.Contour in _contours_info.contour_list():
+		for _cell:ContourDetection.Cell in _contour.list():
 			if _number_of_skip==0 or _count%_number_of_skip==0:
 				_points.append(_cell.to_vector2())
 			_count+=1
 	
+	# 輪郭点を画像中心点を基準にした座標に置き換える
 	var _surroundings:Array[Vector2] = []
 	var _points_size: int = _points.size()
 	# 画像中心を基準とした座標に変換する
@@ -34,56 +37,4 @@ func get_surrounding_points(_image: Image, _number_of_skip:int=0) -> Array[Vecto
 		# 画像中心を基準(0,0)とした座標へ変換
 		var _pos_m:Vector2 = Vector2(2*_pos.x-_image_size.x, 2*_pos.y-_image_size.y)/2
 		_surroundings.append(_pos_m)
-	return _surroundings
-
-# TODO 使用していないので後で消す
-# 不透明の点より、外周部の点を抽出する
-func surrounding_points(_image: Image) -> Array:
-	var size:Vector2i = _image.get_size()	
-	var _opaque_arr:Array[Vector2] = []
-	# 横方向へ走査
-	for _x:int in range(size.x):
-		var x = _x
-		var pixel:Color = _image.get_pixel(x, 0)
-		if pixel.a > 0:
-			_opaque_arr.append(Vector2(_x, 0))
-		# 縦方向へ走査( 2番目から最後の一つ前まで）
-		for _y:int in range(size.y -2):
-			var y:int = _y + 1
-			var pixel00 = _image.get_pixel(x, y-1)
-			var pixel01 = _image.get_pixel(x, y)
-			var pixel02 = _image.get_pixel(x, y+1)
-			if pixel01.a > 0:
-				# 前後のピクセルが不透明のとき
-				if pixel00.a > 0 and pixel02.a > 0:
-					if x == 0 or x == size.x -1 :
-						# 先頭、もしくは最後
-						_opaque_arr.append(Vector2(x, y))
-					else:
-						# 途中のピクセル
-						var pixel_x_00:Color = _image.get_pixel(x-1, y)
-						var pixel_x_02:Color = _image.get_pixel(x+1, y)
-						# 両隣のピクセルが不透明のとき
-						if pixel_x_00.a > 0 and pixel_x_02.a > 0 :
-							# 外周ではないのでスキップする
-							continue
-						else:
-							_opaque_arr.append(Vector2(x, y))
-				else:
-					_opaque_arr.append(Vector2(x, y))
-		# 縦方向の最後の分
-		pixel = _image.get_pixel(x, size.y-1)
-		if pixel.a > 0:
-			#arr.append(pixel)
-			_opaque_arr.append(Vector2(x, size.y -1))
-
-	var _surroundings:Array[Vector2] = []
-	var _opaque_size: int = _opaque_arr.size()
-	# 画像中心を基準とした座標に変換する
-	for idx in range(_opaque_size):
-		var _pos:Vector2 = _opaque_arr.get(idx)
-		# 画像中心を基準(0,0)とした座標へ変換
-		var _pos_m:Vector2 = Vector2(2*_pos.x-size.x, 2*_pos.y-size.y)/2
-		_surroundings.append(_pos_m)
-		
 	return _surroundings
